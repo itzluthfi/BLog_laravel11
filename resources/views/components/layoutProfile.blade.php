@@ -23,15 +23,13 @@
                 <span class="text-2xl font-bold text-gray-800">BlogSpace</span>
             </div>
             <div class="flex items-center space-x-4">
-                <a href="{{ route('dashboard.user') }}" class="text-gray-600 hover:text-indigo-600 transition">
+                <a href="{{ route('home') }}" class="text-gray-600 hover:text-indigo-600 transition">
                     <i class="ri-home-line mr-1"></i>Beranda
                 </a>
-                <a href="{{ route('artikel') }}" class="text-gray-600 hover:text-indigo-600 transition">
-                    <i class="ri-article-line mr-1"></i>Artikel
+               
+                <a href="{{ route('blog.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition flex items-center">
+                    +<i class="ri-pen-nib-line mr-2"></i>Tulis Artikel
                 </a>
-                <button class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition flex items-center">
-                    <i class="ri-pen-nib-line mr-2"></i>Tulis Artikel
-                </button>
             </div>
         </div>
     </nav>
@@ -52,7 +50,7 @@
                 <nav>
                     <ul class="space-y-1">
                         <li>
-                            <a href="{{ route('profil') }}" class="sidebar-menu {{ request()->routeIs('profil') ? 'active' : '' }}">
+                            <a href="{{ route('profile.index') }}" class="sidebar-menu {{ request()->routeIs('profil') ? 'active' : '' }}">
                                 <i class="ri-user-line"></i>
                                 <span>Profil Saya</span>
                             </a>

@@ -12,7 +12,8 @@ class ProfileController extends Controller
     // Menampilkan halaman profil
     public function index()
     {
-        return view('profile.index', ['user' => Auth::user()]);
+        $user = Auth::user(); // Ambil data pengguna yang login
+        return view('profile.index', compact('user'));
     }
 
     // Mengupdate data profil
