@@ -30,7 +30,7 @@
 
         <div>
             <label class="text-gray-700 font-semibold">Nama</label>
-            <input type="text" name="name" value="{{ $user->name }}" required
+            <input type="text" name="name" value="{{ $user->username }}" required
                 class="w-full p-2 border rounded-md focus:outline-indigo-500">
         </div>
 

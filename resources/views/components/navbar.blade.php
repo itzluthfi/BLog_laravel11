@@ -3,10 +3,11 @@
         <div class="flex items-center justify-between">
             <a href="/" class="text-2xl font-bold gradient-text">Go Blog ^_^</a>
             <div class="hidden md:flex space-x-8">
-                <a href="/" class="text-gray-700 hover:text-indigo-600 transition duration-300">Home</a>
-                <a href="/blog" class="text-gray-700 hover:text-indigo-600 transition duration-300">Blog</a>
+                <a href="/" class="text-gray-700 hover:text-indigo-600 transition duration-300">Beranda</a>
+                <a href="{{ route('blog.index') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">Blog</a>
                 <a href="/about" class="text-gray-700 hover:text-indigo-600 transition duration-300">About</a>
                 <a href="/contact" class="text-gray-700 hover:text-indigo-600 transition duration-300">Contact</a>
+                <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">dashboard admin</a>
                 
                 @auth
                     <!-- Link My Profile (Hanya muncul jika sudah login) -->
@@ -51,7 +52,7 @@
             class="md:hidden mt-4 bg-white shadow-md rounded-lg p-4">
             
             <a href="/" class="block py-2 text-gray-700 hover:text-indigo-600">Home</a>
-            <a href="/blog" class="block py-2 text-gray-700 hover:text-indigo-600">Blog</a>
+            <a href="{{ route('blog.index') }}" class="block py-2 text-gray-700 hover:text-indigo-600">Blog</a>
             <a href="/about" class="block py-2 text-gray-700 hover:text-indigo-600">About</a>
             <a href="/contact" class="block py-2 text-gray-700 hover:text-indigo-600">Contact</a>
 

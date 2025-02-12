@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Blog;
 
-class ProfileController extends Controller
+class UserController extends Controller
 {
     // Menampilkan halaman profil
     public function index()

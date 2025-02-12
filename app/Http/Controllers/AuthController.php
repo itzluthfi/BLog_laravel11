@@ -31,15 +31,23 @@ class AuthController extends Controller
             'password' => 'required|string|min:6|confirmed',
         ]);
 
+        // Ambil role default untuk user
+        $userRole = Role::where('name', 'User')->first();
+        if (!$userRole) {
+            return back()->withErrors(['role' => 'Role User tidak ditemukan.'])->onlyInput('username', 'email');
+        }
+
+        // Buat user baru
         $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => Role::where('name', 'User')->first()->id ?? 2, // Default role user
+            'role_id' => $userRole->id,
         ]);
 
-        Auth::login($user); // Opsional: langsung login setelah registrasi
-        return redirect('/login')->with('success', 'Registrasi berhasil, selamat datang!');
+        Auth::login($user); // Langsung login setelah registrasi
+
+        return redirect('/')->with('success', 'Registrasi berhasil, selamat datang!');
     }
 
     // Proses login user
@@ -52,7 +60,13 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect('/')->with('success', 'Login berhasil!');
+
+            // Redirect berdasarkan role
+            if (Auth::user()->role->name === 'Admin') {
+                return redirect('/dashboard')->with('success', 'Login berhasil sebagai Admin!');
+            } else {
+                return redirect('/')->with('success', 'Login berhasil!');
+            }
         }
 
         return back()->withErrors(['email' => 'Email atau password salah.'])->onlyInput('email');
