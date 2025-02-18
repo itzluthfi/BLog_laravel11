@@ -7,7 +7,7 @@ use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -38,7 +38,122 @@ class AdminController extends Controller
     
         return view('admin.users.list', compact('users'));
     }
+    public function blogs(Request $request)
+
+    {
+        $query = Blog::with('author');
     
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where('title', 'like', "%$search%")
+                //   ->orWhere('description', 'like', "%$search%")
+                  ->orWhereHas('author', function ($authorQuery) use ($search) {
+                      $authorQuery->where('username', 'like', "%$search%")
+                      ->orWhere('email', 'like', "%$search%");
+                  });
+                  
+        }
+
+    // Filter berdasarkan author_id jika ada
+    if ($request->has('author_id') && $request->author_id != '') {
+        $query->where('author_id', $request->author_id);
+    }
+    
+        $blogs = $query->paginate(10);
+        $authors = User::all();
+
+    
+        return view('admin.blogs.list', compact('blogs','authors'));
+    }
+    
+    public function createBlog()
+    {
+        return view('admin.blogs.add');
+    }
+
+    public function storeBlog(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'required|string',
+            'full_content' => 'required|string',
+            'published_at' => 'nullable|date',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('blog_images', 'public');
+        }
+
+        if ($request->hasFile('portrait_image')) {
+            $validated['portrait_image'] = $request->file('portrait_image')->store('blog_images', 'public');
+        }
+
+        $validated['author_id'] = Auth::id();
+
+        Blog::create($validated);
+
+        return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil ditambahkan!');
+    }
+
+    public function editBlog($id)
+    {
+        $blog = Blog::findOrFail($id);
+        return view('admin.blogs.edit', compact('blog'));
+    }
+
+    public function updateBlog(Request $request, $id)
+{
+    $blog = Blog::findOrFail($id);
+
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'description' => 'required|string',
+        'full_content' => 'required|string',
+        'published_at' => 'nullable|date',
+    ]);
+
+    // Jika published_at tidak diisi, hapus dari $validated agar nilai lama tidak tertimpa null.
+    if (!$request->filled('published_at')) {
+        unset($validated['published_at']);
+    }
+
+    if ($request->hasFile('image')) {
+        if ($blog->image) {
+            Storage::disk('public')->delete($blog->image);
+        }
+        $validated['image'] = $request->file('image')->store('blog_images', 'public');
+    }
+
+    if ($request->hasFile('portrait_image')) {
+        if ($blog->portrait_image) {
+            Storage::disk('public')->delete($blog->portrait_image);
+        }
+        $validated['portrait_image'] = $request->file('portrait_image')->store('blog_images', 'public');
+    }
+
+    $blog->update($validated);
+
+    return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil diperbarui!');
+}
+
+
+    public function deleteBlog($id)
+    {
+        $blog = Blog::findOrFail($id);
+        if ($blog->image) {
+            Storage::disk('public')->delete($blog->image);
+        }
+        if ($blog->portrait_image) {
+            Storage::disk('public')->delete($blog->portrait_image);
+        }
+        $blog->delete();
+
+        return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil dihapus!');
+    }
 
     public function createUser()
 {

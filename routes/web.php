@@ -63,8 +63,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
         Route::get('/admin/users/add', [AdminController::class, 'createUser'])->name('admin.users.add');
         Route::post('/admin/user/store', [AdminController::class, 'storeUser'])->name('admin.users.store');
+        
         Route::get('/setting', [AdminController::class, 'setting'])->name('admin.setting'); 
         Route::put('/setting', [AdminController::class, 'updateSetting'])->name('admin.setting.update');
-
-
+       
     });
+
+    Route::middleware(['auth', 'admin'])->prefix('admin/blogs')->name('admin.blogs.')->group(function () {
+        Route::get('/', [AdminController::class, 'blogs'])->name('list');
+        Route::get('/create', [AdminController::class, 'createBlog'])->name('create');
+        Route::post('/', [AdminController::class, 'storeBlog'])->name('store');
+        Route::get('/edit/{id}', [AdminController::class, 'editBlog'])->name('edit');
+        Route::put('/{id}', [AdminController::class, 'updateBlog'])->name('update');
+        Route::delete('/{id}', [AdminController::class, 'deleteBlog'])->name('destroy');
+    });
+    

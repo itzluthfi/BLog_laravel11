@@ -20,9 +20,17 @@ class Blog extends Model
         'published_at'
     ];
 
+
+
+    // ✅ Cast `published_at` ke Carbon
+    protected $casts = [
+        'published_at' => 'datetime',
+    ];
+    
+    
     // Tentukan relasi dengan model User (author)
     public function author()
     {
-        return $this->belongsTo(User::class, 'id');
+        return $this->belongsTo(User::class, 'author_id');
     }
 }

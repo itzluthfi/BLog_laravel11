@@ -6,6 +6,8 @@
     <title>BlogSpace - @yield('title')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
     <style>
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
@@ -58,6 +60,12 @@
                             <a href="{{ route('admin.users') }}" class="sidebar-menu {{ request()->routeIs('admin.users') ? 'active' : '' }}">
                                 <i class="ri-group-line"></i>
                                 <span>Kelola Pengguna</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.blogs.list') }}" class="sidebar-menu {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                                <i class="ri-group-line"></i>
+                                <span>Kelola Blogs</span>
                             </a>
                         </li>
                         <li>
