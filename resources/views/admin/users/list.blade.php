@@ -1,4 +1,5 @@
-@extends('layout.admin')
+@extends('layout.dashboardAdmin')
+
 
 @section('title', 'Daftar Pengguna')
 

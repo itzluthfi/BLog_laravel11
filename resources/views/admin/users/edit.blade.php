@@ -1,4 +1,5 @@
-@extends('layout.admin')
+@extends('layout.dashboardAdmin')
+
 
 @section('title', 'Edit Pengguna')
 
@@ -8,7 +9,7 @@
 
     <form action="{{ route('admin.users.update', $user->id) }}" method="POST" class="space-y-4">
         @csrf
-        @method('PUT')
+        @method('POST')
 
         <div>
             <label class="block text-gray-700">Nama</label>

@@ -1,4 +1,5 @@
-@extends('components.layoutProfile')
+@extends('layout.dashboardUser')
+
 
 @section('title', 'Edit Artikel')
 

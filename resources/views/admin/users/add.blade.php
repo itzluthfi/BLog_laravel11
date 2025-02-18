@@ -1,4 +1,5 @@
-@extends('layout.admin')
+@extends('layout.dashboardAdmin')
+
 
 @section('content')
 <div class="container mx-auto p-6">
@@ -10,7 +11,6 @@
 
     <form action="{{ route('admin.users.store') }}" method="POST" class="bg-white p-6 rounded shadow-md">
         @csrf
-
         <div class="mb-4">
             <label class="block text-gray-700">Username</label>
             <input type="text" name="username" class="w-full p-2 border rounded" required>

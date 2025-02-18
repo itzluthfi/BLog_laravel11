@@ -1,4 +1,5 @@
-@extends('components.layout')
+@extends('layout.app') 
+
 
 @section('title_page', 'Post Detail')
 

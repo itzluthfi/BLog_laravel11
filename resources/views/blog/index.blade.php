@@ -1,4 +1,6 @@
-@extends('components.layout') 
+@extends('layout.app') 
+
+
 
 @section('title_page', 'Blog Page') <!-- Mengisi bagian @yield('title_page') -->
 

@@ -7,18 +7,26 @@
                 <a href="{{ route('blog.index') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">Blog</a>
                 <a href="/about" class="text-gray-700 hover:text-indigo-600 transition duration-300">About</a>
                 <a href="/contact" class="text-gray-700 hover:text-indigo-600 transition duration-300">Contact</a>
-                <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">dashboard admin</a>
                 
                 @auth
-                    <!-- Link My Profile (Hanya muncul jika sudah login) -->
-                    <a href="{{ route('profile.index') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">My Profile</a>
-                @endauth
+                    {{-- @dd(Auth::user()->role->name) --}}
+                @if(Auth::user()->role->name == 'Admin')
+                    <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">
+                        Dashboard Admin
+                    </a>
+                @elseif(Auth::user()->role->name == 'User')
+                    <a href="{{ route('profile.index') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">
+                        My Profile
+                    </a>
+                @endif
+            @endauth
+            
             </div>
             
             <div class="hidden md:block">
                 @auth
                     <!-- Jika sudah login, tampilkan tombol Logout -->
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
+                    <form action="{{ route('logout') }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
                         @csrf
                         <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition duration-300">
                             Logout
@@ -60,7 +68,7 @@
                 <!-- Link My Profile (Hanya muncul jika sudah login) -->
                 <a href="{{ route('profile.index') }}" class="block py-2 text-gray-700 hover:text-indigo-600">My Profile</a>
                 
-                <form action="{{ route('logout') }}" method="POST" class="mt-4 w-full">
+                <form action="{{ route('logout') }}" method="POST" class="mt-4 w-full" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
                     @csrf
                     <button type="submit" class="text-gray-700 hover:text-indigo-600 transition duration-300">
                         Logout

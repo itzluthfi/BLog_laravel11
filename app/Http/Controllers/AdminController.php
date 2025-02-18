@@ -42,11 +42,13 @@ class AdminController extends Controller
 
     public function createUser()
 {
+
     return view('admin.users.add');
 }
 
 public function storeUser(Request $request)
 {
+    // dd($request->all());
     $validated = $request->validate([
         'username' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email',

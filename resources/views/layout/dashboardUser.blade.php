@@ -19,15 +19,16 @@
     <nav class="bg-white shadow-md fixed top-0 left-0 right-0 z-50">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center">
-                <i class="ri-admin-line text-2xl text-indigo-600 mr-2"></i>
-                <span class="text-2xl font-bold text-gray-800">Admin Panel</span>
+                <i class="ri-book-2-line text-2xl text-indigo-600 mr-2"></i>
+                <span class="text-2xl font-bold text-gray-800">BlogSpace</span>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="{{ route('home') }}" class="text-gray-600 hover:text-indigo-600 transition">
                     <i class="ri-home-line mr-1"></i>Beranda
                 </a>
-                <a href="{{ route('admin.dashboard') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition flex items-center">
-                    <i class="ri-dashboard-line mr-2"></i>Dashboard
+               
+                <a href="{{ route('blog.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition flex items-center">
+                    +<i class="ri-pen-nib-line mr-2"></i>Tulis Artikel
                 </a>
             </div>
         </div>
@@ -39,39 +40,46 @@
         <aside class="w-64 bg-white border-r shadow-lg overflow-y-auto">
             <div class="p-4">
                 <div class="flex items-center mb-6">
-                    <img src="https://via.placeholder.com/100" alt="Admin Avatar" class="w-16 h-16 rounded-full mr-4 border-4 border-indigo-100">
+                    <img src="https://via.placeholder.com/100" alt="Avatar" class="w-16 h-16 rounded-full mr-4 border-4 border-indigo-100">
                     <div>
-                        <h2 class="text-lg font-bold text-gray-800">Admin</h2>
-                        <p class="text-sm text-gray-500">Administrator</p>
+                        <h2 class="text-lg font-bold text-gray-800">John Doe</h2>
+                        <p class="text-sm text-gray-500">@johndoe</p>
                     </div>
                 </div>
 
                 <nav>
                     <ul class="space-y-1">
                         <li>
-                            <a href="{{ route('admin.dashboard') }}" class="sidebar-menu {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                                <i class="ri-dashboard-line"></i>
-                                <span>Dashboard</span>
+                            <a href="{{ route('profile.index') }}" class="sidebar-menu {{ request()->routeIs('profil') ? 'active' : '' }}">
+                                <i class="ri-user-line"></i>
+                                <span>Profil Saya</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.users') }}" class="sidebar-menu {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                                <i class="ri-group-line"></i>
-                                <span>Kelola Pengguna</span>
+                            <a href="{{ route('profile.artikelSaya') }}" class="sidebar-menu {{ request()->routeIs('artikel') ? 'active' : '' }}">
+                                <i class="ri-article-line"></i>
+                                <span>Artikel Saya</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('admin.setting') }}" class="sidebar-menu {{ request()->routeIs('admin.setting') ? 'active' : '' }}">
+                            <a href="{{ route('profile.disukai') }}" class="sidebar-menu {{ request()->routeIs('disukai') ? 'active' : '' }}">
+                                <i class="ri-heart-line"></i>
+                                <span>Artikel Disukai</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('profile.pengaturan') }}" class="sidebar-menu {{ request()->routeIs('pengaturan') ? 'active' : '' }}">
                                 <i class="ri-settings-3-line"></i>
                                 <span>Pengaturan</span>
                             </a>
                         </li>
-                        
                         <li>
-                            <a href="#logout" class="sidebar-menu text-red-500 hover:bg-red-50">
+                            <form action="{{route('logout')}}" method="POST" class="sidebar-menu text-red-500 hover:bg-red-50"
+                                onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
+                                @csrf
                                 <i class="ri-logout-box-r-line"></i>
-                                <span>Keluar</span>
-                            </a>
+                                <button type="submit">Keluar</button>
+                            </form>
                         </li>
                     </ul>
                 </nav>
