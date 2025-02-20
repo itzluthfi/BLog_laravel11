@@ -34,19 +34,19 @@ class BlogController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'landscape_image' => 'nullable|url',
+            'portrait_image' => 'nullable|url',
             'description' => 'required|string',
             'full_content' => 'required|string',
             'author_id' => 'required|exists:users,id',
             'published_at' => 'nullable|date',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('images', 'public');
+        if ($request->filled('landscape_image')) {
+            $validated['landscape_image'] = $this->saveImageFromUrl($request->landscape_image, 'landscape');
         }
-        if ($request->hasFile('portrait_image')) {
-            $validated['portrait_image'] = $request->file('portrait_image')->store('images', 'public');
+        if ($request->filled('portrait_image')) {
+            $validated['portrait_image'] = $this->saveImageFromUrl($request->portrait_image, 'portrait');
         }
 
         Blog::create($validated);
@@ -78,25 +78,25 @@ class BlogController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'landscape_image' => 'nullable|url',
+            'portrait_image' => 'nullable|url',
             'description' => 'required|string',
             'full_content' => 'required|string',
             'author_id' => 'required|exists:users,id',
             'published_at' => 'nullable|date',
         ]);
 
-        if ($request->hasFile('image')) {
-            if ($blog->image) {
-                Storage::disk('public')->delete($blog->image);
+        if ($request->filled('landscape_image')) {
+            if ($blog->landscape_image) {
+                Storage::disk('public')->delete($blog->landscape_image);
             }
-            $validated['image'] = $request->file('image')->store('images', 'public');
+            $validated['landscape_image'] = $this->saveImageFromUrl($request->landscape_image, 'landscape');
         }
-        if ($request->hasFile('portrait_image')) {
+        if ($request->filled('portrait_image')) {
             if ($blog->portrait_image) {
                 Storage::disk('public')->delete($blog->portrait_image);
             }
-            $validated['portrait_image'] = $request->file('portrait_image')->store('images', 'public');
+            $validated['portrait_image'] = $this->saveImageFromUrl($request->portrait_image, 'portrait');
         }
 
         $blog->update($validated);
@@ -109,8 +109,8 @@ class BlogController extends Controller
      */
     public function destroy(Blog $blog)
     {
-        if ($blog->image) {
-            Storage::disk('public')->delete($blog->image);
+        if ($blog->landscape_image) {
+            Storage::disk('public')->delete($blog->landscape_image);
         }
         if ($blog->portrait_image) {
             Storage::disk('public')->delete($blog->portrait_image);
@@ -119,5 +119,17 @@ class BlogController extends Controller
         $blog->delete();
 
         return redirect()->route('blog.index')->with('success', 'Blog berhasil dihapus!');
+    }
+
+    /**
+     * Download and save image from a given URL.
+     */
+    private function saveImageFromUrl($url, $prefix)
+    {
+        $imageContents = file_get_contents($url);
+        $imageName = $prefix . '_' . time() . '.jpg';
+        $path = 'images/' . $imageName;
+        Storage::disk('public')->put($path, $imageContents);
+        return $path;
     }
 }

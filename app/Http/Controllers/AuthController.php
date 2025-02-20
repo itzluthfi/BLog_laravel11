@@ -47,7 +47,7 @@ class AuthController extends Controller
 
         Auth::login($user); // Langsung login setelah registrasi
 
-        return redirect('/')->with('success', 'Registrasi berhasil, selamat datang!');
+        return redirect()->route('login')->with('success', 'Registrasi berhasil!');
     }
 
     // Proses login user
@@ -63,9 +63,9 @@ class AuthController extends Controller
 
             // Redirect berdasarkan role
             if (Auth::user()->role->name === 'Admin') {
-                return redirect('/admin/dashboard')->with('success', 'Login berhasil sebagai Admin!');
+                return redirect()->route('admin.dashboard')->with('success', 'Login berhasil sebagai Admin!');
             } else {
-                return redirect('/')->with('success', 'Login berhasil!');
+                return redirect()->route('profile.index')->with('success', 'Login berhasil sebagai User!');
             }
         }
 
@@ -78,6 +78,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login')->with('success', 'Logout berhasil.');
+        return redirect()->route('home')->with('success', 'Logout berhasil!');
     }
 }

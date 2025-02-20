@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Blog extends Model
 {
@@ -33,4 +34,15 @@ class Blog extends Model
     {
         return $this->belongsTo(User::class, 'author_id');
     }
+
+     // Akses Gambar dengan URL Storage
+     public function getLandscapeImageUrlAttribute()
+     {
+         return Storage::url($this->landscape_image);
+     }
+ 
+     public function getPortraitImageUrlAttribute()
+     {
+         return Storage::url($this->portrait_image);
+     }
 }
