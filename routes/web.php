@@ -37,9 +37,9 @@ Route::get('/contact', function () {
 
 // Protected Routes (Hanya untuk user yang sudah login)
 Route::middleware('auth')->group(function () {
-    Route::resource('blog', BlogController::class)->except(['index']);
-
+    
     Route::prefix('profile')->name('profile.')->group(function () {
+        Route::resource('blog', BlogController::class)->except(['index']);
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::post('/update', [UserController::class, 'update'])->name('update');
         Route::post('/update-password', [UserController::class, 'updatePassword'])->name('updatePassword');
@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/disukai', fn() => view('profile.artikelDisukai'))->name('disukai');
         Route::get('/pengaturan', fn() => view('profile.pengaturan'))->name('pengaturan');
     });
-
+    
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 

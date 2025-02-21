@@ -19,8 +19,8 @@ class BlogFactory extends Factory
         $portraitUrl = "https://static.zerochan.net/Sung.Jin-woo.full.3537826.jpg";
 
         // Nama file unik
-        $landscapeFilename = 'images/landscape_' . Str::random(10) . '.jpg';
-        $portraitFilename = 'images/portrait_' . Str::random(10) . '.jpg';
+        $landscapeFilename = 'blog_images/landscape_' . Str::random(10) . '.jpg';
+        $portraitFilename = 'blog_images/portrait_' . Str::random(10) . '.jpg';
 
         // Download dan simpan di storage
         Storage::disk('public')->put($landscapeFilename, file_get_contents($landscapeUrl));
@@ -28,11 +28,11 @@ class BlogFactory extends Factory
 
         return [
             'title' => $this->faker->sentence,
-            'landscape_image' => 'storage/' . $landscapeFilename, // Path yang bisa diakses
+            'landscape_image' => 'storage/' . $landscapeFilename, 
             'portrait_image' => 'storage/' . $portraitFilename,
             'description' => $this->faker->paragraph,
             'full_content' => $this->faker->text(1000),
-            'author_id' => User::factory(),
+            'author_id' => User::query()->inRandomOrder()->value('id') ?? User::factory()->create()->id, //ambil user yg sudah ada/ buat yg baru 
             'published_at' => $this->faker->date(),
         ];
     }

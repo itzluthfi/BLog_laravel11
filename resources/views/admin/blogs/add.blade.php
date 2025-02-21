@@ -16,7 +16,7 @@
 
         <div class="mb-4">
             <label class="block text-gray-700">Gambar</label>
-            <input type="file" name="image" class="w-full p-2 border rounded-lg">
+            <input type="file" name="landscape_image" class="w-full p-2 border rounded-lg">
         </div>
 
         <div class="mb-4">
@@ -27,6 +27,15 @@
         <div class="mb-4">
             <label class="block text-gray-700">Konten Lengkap</label>
             <textarea name="full_content" class="w-full p-2 border rounded-lg"></textarea>
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Penulis</label>
+            <select name="author_id" class="w-full border rounded-lg p-2" required>
+                @foreach ($authors as $author)
+                    <option value="{{ $author->id }}">{{ $author->username }}</option>
+                @endforeach
+            </select>
         </div>
 
         <div class="mb-4">

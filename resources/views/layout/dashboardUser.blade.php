@@ -27,7 +27,7 @@
                     <i class="ri-home-line mr-1"></i>Beranda
                 </a>
                
-                <a href="{{ route('blog.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition flex items-center">
+                <a href="{{ route('profile.blog.create') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition flex items-center">
                     +<i class="ri-pen-nib-line mr-2"></i>Tulis Artikel
                 </a>
             </div>

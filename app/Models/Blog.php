@@ -13,7 +13,7 @@ class Blog extends Model
     // Tentukan kolom mana yang dapat diisi (fillable)
     protected $fillable = [
         'title', 
-        'image', 
+        'landscape_image', 
         'portrait_image', 
         'description', 
         'full_content', 

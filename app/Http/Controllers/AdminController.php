@@ -66,7 +66,7 @@ class AdminController extends Controller
         return view('admin.blogs.list', compact('blogs','authors'));
     }
     
-    public function createBlog()
+    public function createBlog(Request $request)
     {
         return view('admin.blogs.add');
     }
@@ -75,15 +75,15 @@ class AdminController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'required|string',
             'full_content' => 'required|string',
             'published_at' => 'nullable|date',
         ]);
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('blog_images', 'public');
+        if ($request->hasFile('landscape_image')) {
+            $validated['landscape_image'] = $request->file('landscape_image')->store('blog_images', 'public');
         }
 
         if ($request->hasFile('portrait_image')) {
@@ -109,7 +109,7 @@ class AdminController extends Controller
 
     $validated = $request->validate([
         'title' => 'required|string|max:255',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'description' => 'required|string',
         'full_content' => 'required|string',
@@ -121,11 +121,11 @@ class AdminController extends Controller
         unset($validated['published_at']);
     }
 
-    if ($request->hasFile('image')) {
-        if ($blog->image) {
-            Storage::disk('public')->delete($blog->image);
+    if ($request->hasFile('landscape_image')) {
+        if ($blog->landscape_image) {
+            Storage::disk('public')->delete($blog->landscape_image);
         }
-        $validated['image'] = $request->file('image')->store('blog_images', 'public');
+        $validated['landscape_image'] = $request->file('landscape_image')->store('blog_images', 'public');
     }
 
     if ($request->hasFile('portrait_image')) {
