@@ -38,10 +38,10 @@
             </select>
         </div>
 
-        <div class="mb-4">
+        {{-- <div class="mb-4">
             <label class="block text-gray-700">Tanggal Publikasi</label>
             <input type="date" name="published_at" class="w-full p-2 border rounded-lg">
-        </div>
+        </div> --}}
 
         <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Simpan</button>
     </form>

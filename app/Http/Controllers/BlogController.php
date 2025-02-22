@@ -41,8 +41,8 @@ class BlogController extends Controller
             'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'required|string',
             'full_content' => 'required|string',
-            'author_id' => 'required|exists:users,id',
-            'published_at' => 'nullable|date',
+            // 'author_id' => Auth::id(),
+            // 'published_at' => now(),
         ]);
     
         // Simpan file jika ada
@@ -59,6 +59,9 @@ class BlogController extends Controller
             $portraitImage->move(public_path('storage/blog_images'), $portraitFilename);
             $validated['portrait_image'] = 'storage/blog_images/' . $portraitFilename;
         }
+
+        $validated['author_id'] = Auth::id();
+        $validated['published_at'] = now(); 
     
         // Simpan ke database
         Blog::create($validated);
@@ -96,7 +99,7 @@ class BlogController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'full_content' => 'required|string',
-            'published_at' => 'required|date',
+            // 'published_at' => 'required|date',
             'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);

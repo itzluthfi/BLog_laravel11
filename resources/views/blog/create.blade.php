@@ -8,7 +8,7 @@
     
     <form action="{{ route('profile.blog.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <input type="hidden" name="author_id" value="{{ auth()->id() }}">
+        {{-- <input type="hidden" name="author_id" value="{{ auth()->id() }}"> --}}
 
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Judul</label>
@@ -36,10 +36,10 @@
             <textarea name="full_content" class="w-full border rounded-lg p-2" rows="6" placeholder="Tulis konten lengkap..." required></textarea>
         </div>
 
-        <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-2">Tanggal Publikasi</label>
-            <input type="date" name="published_at" class="w-full border rounded-lg p-2" required>
-        </div>
+            {{-- <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Tanggal Publikasi</label>
+                <input type="date" name="published_at" class="w-full border rounded-lg p-2" required>
+            </div> --}}
 
         <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Simpan Artikel</button>
     </form>

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4"><i class="fas fa-newspaper"></i> Artikel Saya</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4"> Artikel Saya</h2>
 
         {{-- Notifikasi sukses --}}
         @if (session('success'))

@@ -18,7 +18,11 @@ class AdminController extends Controller
     {
         $totalUsers = User::count();
         $totalBlogs = Blog::count();
-        return view('admin.dashboard', compact('totalUsers', 'totalBlogs'));
+        $latestBlogs = Blog::with('author')->latest()->take(5)->get(); // Perbaikan typo
+        $categoryNames = ['Teknologi', 'Bisnis', 'Kesehatan', 'Olahraga', 'Hiburan'];
+        $articleCounts = [10, 15, 8, 12, 20];
+    
+        return view('admin.dashboard', compact('totalUsers', 'totalBlogs', 'latestBlogs', 'categoryNames', 'articleCounts'));
     }
 
     /**
@@ -60,15 +64,16 @@ class AdminController extends Controller
     }
     
         $blogs = $query->paginate(10);
-        $authors = User::all();
+        $authors = User::with('role')->get();
 
     
         return view('admin.blogs.list', compact('blogs','authors'));
     }
     
-    public function createBlog(Request $request)
+    public function createBlog()
     {
-        return view('admin.blogs.add');
+        $authors = User::with('role')->get();
+        return view('admin.blogs.add', compact('authors'));
     }
 
     public function storeBlog(Request $request)
@@ -79,18 +84,27 @@ class AdminController extends Controller
             'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'required|string',
             'full_content' => 'required|string',
-            'published_at' => 'nullable|date',
+            // 'author_id' => 'required|exists:users,id',
+            // 'published_at' => 'required|date',
         ]);
 
+        // Simpan file jika ada
         if ($request->hasFile('landscape_image')) {
-            $validated['landscape_image'] = $request->file('landscape_image')->store('blog_images', 'public');
+            $landscapeImage = $request->file('landscape_image');
+            $landscapeFilename = 'landscape_' . time() . '-' . $landscapeImage->getClientOriginalName();
+            $landscapeImage->move(public_path('storage/blog_images'), $landscapeFilename);
+            $validated['landscape_image'] = 'storage/blog_images/' . $landscapeFilename; 
         }
 
         if ($request->hasFile('portrait_image')) {
-            $validated['portrait_image'] = $request->file('portrait_image')->store('blog_images', 'public');
+            $portraitImage = $request->file('portrait_image');
+            $portraitFilename = 'portrait_' . time() . '-' . $portraitImage->getClientOriginalName();
+            $portraitImage->move(public_path('storage/blog_images'), $portraitFilename);
+            $validated['portrait_image'] = 'storage/blog_images/' . $portraitFilename;
         }
 
         $validated['author_id'] = Auth::id();
+        $validated['published_at'] = now(); 
 
         Blog::create($validated);
 
@@ -104,7 +118,7 @@ class AdminController extends Controller
     }
 
     public function updateBlog(Request $request, $id)
-{
+    {
     $blog = Blog::findOrFail($id);
 
     $validated = $request->validate([

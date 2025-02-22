@@ -55,11 +55,11 @@
         </div>
 
         {{-- Tanggal Publikasi --}}
-        <div class="mb-4">
+        {{-- <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Tanggal Publikasi</label>
             <input type="date" name="published_at" class="w-full border rounded-lg p-2" 
                    value="{{ old('published_at', $blog->published_at ? $blog->published_at->format('Y-m-d') : '') }}" required>
-        </div>
+        </div> --}}
 
         <div class="flex flex-wrap gap-3">
             <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">

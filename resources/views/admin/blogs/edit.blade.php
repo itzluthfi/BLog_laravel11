@@ -31,10 +31,10 @@
             <textarea name="full_content" class="w-full p-2 border rounded-lg">{{ $blog->full_content }}</textarea>
         </div>
 
-        <div class="mb-4">
+        {{-- <div class="mb-4">
             <label class="block text-gray-700">Tanggal Publikasi</label>
             <input type="date" name="published_at" class="w-full p-2 border rounded-lg" value="{{ $blog->published_at }}">
-        </div>
+        </div> --}}
 
         <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Perbarui</button>
     </form>

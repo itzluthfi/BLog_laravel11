@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlogSpace - @yield('title')</title>
+    <title>Go Blogs ^_^ - @yield('title')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <style>
@@ -20,7 +20,7 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center">
                 <i class="ri-book-2-line text-2xl text-indigo-600 mr-2"></i>
-                <span class="text-2xl font-bold text-gray-800">BlogSpace</span>
+                <span class="text-2xl font-bold text-gray-800">Go Blogs ^_^</span>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="{{ route('home') }}" class="text-gray-600 hover:text-indigo-600 transition">

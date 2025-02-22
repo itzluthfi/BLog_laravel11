@@ -15,7 +15,7 @@
         @method('PUT')
 
         <div>
-            <label class="block text-gray-700">Nama</label>
+            <label class="block text-gray-700">Username</label>
             <input type="text" name="username" value="{{ old('username', $admin->username) }}" class="w-full border p-2 rounded-lg">
             @error('username') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
         </div>
