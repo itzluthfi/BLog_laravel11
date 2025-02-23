@@ -11,27 +11,21 @@ use Illuminate\Support\Facades\Auth;
 
 class BlogController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    
     public function index()
     {
         $blogs = Blog::latest()->get();
         return view('blog.index', compact('blogs'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
         $authors = Auth::user();
         return view('blog.create', compact('authors'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+   
     public function store(Request $request)
     {
         // Validasi request
@@ -41,8 +35,7 @@ class BlogController extends Controller
             'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'required|string',
             'full_content' => 'required|string',
-            // 'author_id' => Auth::id(),
-            // 'published_at' => now(),
+            
         ]);
     
         // Simpan file jika ada
@@ -70,17 +63,13 @@ class BlogController extends Controller
     }
     
     
-    /**
-     * Display the specified resource.
-     */
+   
     public function show(Blog $blog)
     {
         return view('blog.detail', compact('blog'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+   
     public function edit(Blog $blog)
     {
         $authors = User::all();
@@ -145,9 +134,6 @@ class BlogController extends Controller
     }
     
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Blog $blog)
     {
         if ($blog->landscape_image) {

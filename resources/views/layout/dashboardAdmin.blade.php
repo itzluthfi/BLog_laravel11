@@ -59,19 +59,25 @@
                         <li>
                             <a href="{{ route('admin.users') }}" class="sidebar-menu {{ request()->routeIs('admin.users') ? 'active' : '' }}">
                                 <i class="ri-group-line"></i>
-                                <span>Kelola Pengguna</span>
+                                <span>Manage Users</span>
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.blogs.list') }}" class="sidebar-menu {{ request()->routeIs('admin.users') ? 'active' : '' }}">
                                 <i class="ri-group-line"></i>
-                                <span>Kelola Blogs</span>
+                                <span>Manage Blogs</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.categories.index') }}" class="sidebar-menu {{ request()->routeIs('admin.users') ? 'active' : '' }}">
+                                <i class="ri-group-line"></i>
+                                <span>Manage Categories</span>
                             </a>
                         </li>
                         <li>
                             <a href="{{ route('admin.setting') }}" class="sidebar-menu {{ request()->routeIs('admin.setting') ? 'active' : '' }}">
                                 <i class="ri-settings-3-line"></i>
-                                <span>Pengaturan</span>
+                                <span>Setting</span>
                             </a>
                         </li>
                         
@@ -79,7 +85,7 @@
                             <form action="{{route('logout')}}" method="POST" class="sidebar-menu text-red-500 hover:bg-red-50">
                                 @csrf
                                 <i class="ri-logout-box-r-line"></i>
-                                <button type="submit">Keluar</button>
+                                <button type="submit">Logout</button>
                             </form>
                         </li>
                     </ul>

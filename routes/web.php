@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CategoryController;
 
 
 
@@ -55,19 +56,28 @@ Route::middleware('auth')->group(function () {
 //     Route::get('/dashboard', [SuperAdminController::class, 'index']);
 // });
 
-    Route::middleware(['auth', 'admin'])->group(function () {
-        Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-        Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
-        Route::get('/admin/users/{id}/edit', [AdminController::class, 'editUser'])->name('admin.users.edit');
-        Route::post('/admin/users/{id}', [AdminController::class, 'updateUser'])->name('admin.users.update');
-        Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.delete');
-        Route::get('/admin/users/add', [AdminController::class, 'createUser'])->name('admin.users.add');
-        Route::post('/admin/user/store', [AdminController::class, 'storeUser'])->name('admin.users.store');
-        
-        Route::get('/setting', [AdminController::class, 'setting'])->name('admin.setting'); 
-        Route::put('/setting', [AdminController::class, 'updateSetting'])->name('admin.setting.update');
-       
-    });
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    
+    // Manajemen Pengguna
+    Route::get('/users', [AdminController::class, 'users'])->name('users');
+    Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+    Route::post('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    Route::get('/users/add', [AdminController::class, 'createUser'])->name('users.add');
+    Route::post('/user/store', [AdminController::class, 'storeUser'])->name('users.store');
+
+    // Manajemen Kategori (dengan nama prefix admin.categories)
+    Route::resource('categories', CategoryController::class)->names('categories');
+    
+    // Menampilkan kategori berdasarkan slug
+    Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('categories.show');
+
+    // Pengaturan
+    Route::get('/setting', [AdminController::class, 'setting'])->name('setting'); 
+    Route::put('/setting', [AdminController::class, 'updateSetting'])->name('setting.update');
+});
+
 
     Route::middleware(['auth', 'admin'])->prefix('admin/blogs')->name('admin.blogs.')->group(function () {
         Route::get('/', [AdminController::class, 'blogs'])->name('list');

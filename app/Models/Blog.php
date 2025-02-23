@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Blog extends Model
 {
@@ -22,18 +23,28 @@ class Blog extends Model
     ];
 
 
-
     // ✅ Cast `published_at` ke Carbon
     protected $casts = [
         'published_at' => 'datetime',
     ];
-    
-    
-    // Tentukan relasi dengan model User (author)
+
     public function author()
     {
         return $this->belongsTo(User::class, 'author_id');
     }
+    
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    // Setter untuk otomatis membuat slug dari title
+    public function setTitleAttribute($value)
+    {
+        $this->attributes['title'] = $value;
+        $this->attributes['slug'] = Str::slug($value);
+    }
+    
 
      // Akses Gambar dengan URL Storage
      public function getLandscapeImageUrlAttribute()

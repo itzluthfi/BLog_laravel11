@@ -10,12 +10,14 @@ return new class extends Migration {
         Schema::create('blogs', function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->string('slug')->unique();
             $table->string('landscape_image')->nullable();
             $table->string('portrait_image')->nullable();
             $table->text('description');
             $table->text('full_content');
-            $table->foreignId('author_id')->constrained('users')->onDelete('cascade'); 
-            $table->date('published_at');
+            $table->foreignId('author_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('categories')->onUpdate('cascade')->onDelete('cascade');
+            $table->date('published_at')->nullable();
             $table->timestamps();
         });
     }

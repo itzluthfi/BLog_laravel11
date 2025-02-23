@@ -8,16 +8,15 @@
     <div class="p-6">
         <!-- Judul -->
         <h3 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
-            
             {{ $post->title }}
         </h3>
 
-        <!-- Informasi Penulis & Tanggal -->
-        <div class="text-gray-500 text-sm flex items-center gap-6 mt-3">
+        <!-- Informasi Penulis, Tanggal & Kategori -->
+        <div class="text-gray-500 text-sm flex flex-wrap items-center gap-6 mt-3">
             <div class="flex items-center gap-2">
                 <i class="far fa-calendar-alt text-indigo-500"></i>
                 <span>{{ $post->published_at->format('d M Y') }}</span> 
-                | <span></span>{{ $post->created_at->diffForHumans() }}</span>
+                | <span>{{ $post->created_at->diffForHumans() }}</span>
             </div>
             <div class="flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,6 +24,11 @@
                 </svg>
                 <span>{{ $post->author->name }}</span>
             </div>
+            <div class="flex items-center gap-2 bg-indigo-100 text-indigo-600 px-4 py-1 rounded-full text-sm font-medium">
+                <i class="fa-solid fa-tag text-indigo-600 text-base"></i>
+                <span class="text-sm">{{ $post->category->name }}</span>
+            </div>
+            
         </div>
 
         <!-- Deskripsi -->
