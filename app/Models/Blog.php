@@ -14,6 +14,7 @@ class Blog extends Model
     // Tentukan kolom mana yang dapat diisi (fillable)
     protected $fillable = [
         'title', 
+        'category_id',
         'landscape_image', 
         'portrait_image', 
         'description', 
@@ -27,6 +28,12 @@ class Blog extends Model
     protected $casts = [
         'published_at' => 'datetime',
     ];
+
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 
     public function author()
     {

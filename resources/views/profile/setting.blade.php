@@ -1,4 +1,4 @@
-@extends('layout.dashboardAdmin')
+@extends('layout.dashboardUser')
 
 @section('title', 'Pengaturan Akun')
 
@@ -10,19 +10,19 @@
         <div class="bg-green-100 text-green-700 p-3 rounded mb-4">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('admin.setting.update') }}" method="POST" class="space-y-4">
+    <form action="{{ route('profile.setting.update') }}" method="POST" class="space-y-4">
         @csrf
         @method('PUT')
 
         <div>
             <label class="block text-gray-700">Username</label>
-            <input type="text" name="username" value="{{ old('username', $admin->username) }}" class="w-full border p-2 rounded-lg">
+            <input type="text" name="username" value="{{ old('username', $user->username) }}" class="w-full border p-2 rounded-lg">
             @error('username') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
             <label class="block text-gray-700">Email</label>
-            <input type="email" name="email" value="{{ old('email', $admin->email) }}" class="w-full border p-2 rounded-lg">
+            <input type="email" name="email" value="{{ old('email', $user->email) }}" class="w-full border p-2 rounded-lg">
             @error('email') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
         </div>
 

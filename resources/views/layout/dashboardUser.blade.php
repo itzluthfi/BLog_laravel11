@@ -50,31 +50,31 @@
                 <nav>
                     <ul class="space-y-1">
                         <li>
-                            <a href="{{ route('profile.index') }}" class="sidebar-menu {{ request()->routeIs('profil') ? 'active' : '' }}">
+                            <a href="{{ route('profile.index') }}" class="sidebar-menu {{ request()->routeIs('profile.index') ? 'active' : '' }}">
                                 <i class="ri-user-line"></i>
                                 <span>Profil Saya</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('profile.artikelSaya') }}" class="sidebar-menu {{ request()->routeIs('artikel') ? 'active' : '' }}">
+                            <a href="{{ route('profile.artikelSaya') }}" class="sidebar-menu {{ request()->routeIs('profile.artikelSaya') ? 'active' : '' }}">
                                 <i class="ri-article-line"></i>
                                 <span>Artikel Saya</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('profile.disukai') }}" class="sidebar-menu {{ request()->routeIs('disukai') ? 'active' : '' }}">
+                            <a href="{{ route('profile.disukai') }}" class="sidebar-menu {{ request()->routeIs('profile.disukai') ? 'active' : '' }}">
                                 <i class="ri-heart-line"></i>
                                 <span>Artikel Disukai</span>
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('profile.pengaturan') }}" class="sidebar-menu {{ request()->routeIs('pengaturan') ? 'active' : '' }}">
+                            <a href="{{ route('profile.setting') }}" class="sidebar-menu {{ request()->routeIs('profile.setting') ? 'active' : '' }}">
                                 <i class="ri-settings-3-line"></i>
                                 <span>Pengaturan</span>
                             </a>
                         </li>
                         <li>
-                            <form action="{{route('logout')}}" method="POST" class="sidebar-menu text-red-500 hover:bg-red-50"
+                            <form action="{{ route('logout') }}" method="POST" class="sidebar-menu text-red-500 hover:bg-red-50"
                                 onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
                                 @csrf
                                 <i class="ri-logout-box-r-line"></i>
@@ -83,6 +83,7 @@
                         </li>
                     </ul>
                 </nav>
+                
             </div>
         </aside>
 

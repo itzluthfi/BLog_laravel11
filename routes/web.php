@@ -6,8 +6,8 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
-
-
+use App\Http\Controllers\CommentController;
+use App\Models\User;
 
 // Public Routes (Hanya untuk guest)
 Route::middleware('guest')->group(function () {
@@ -46,15 +46,27 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-password', [UserController::class, 'updatePassword'])->name('updatePassword');
         Route::get('/artikel-saya', [UserController::class, 'myArticles'])->name('artikelSaya');
         Route::get('/disukai', fn() => view('profile.artikelDisukai'))->name('disukai');
-        Route::get('/pengaturan', fn() => view('profile.pengaturan'))->name('pengaturan');
+        Route::get('/setting', [UserController::class, 'setting'])->name('setting'); 
+
+        Route::put('/setting', [UserController::class, 'updateSetting'])->name('setting.update');
+
     });
-    
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    // Route untuk Favorite
+    Route::post('/blog/{id}/favorite', [BlogController::class, 'favorite'])->name('blog.favorite');
+
+   // Route untuk Comment (CRUD) - Hanya membutuhkan {comment}
+    Route::prefix('comments')->name('comments.')->group(function () {
+    Route::post('/{blog}', [CommentController::class, 'store'])->name('store');
+    Route::get('/{comment}/edit', [CommentController::class, 'edit'])->name('edit');
+    Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
+    Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
 });
 
-// Route::middleware('superadmin')->group(function () {
-//     Route::get('/dashboard', [SuperAdminController::class, 'index']);
-// });
+    
+});
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
@@ -67,7 +79,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/users/add', [AdminController::class, 'createUser'])->name('users.add');
     Route::post('/user/store', [AdminController::class, 'storeUser'])->name('users.store');
 
-    // Manajemen Kategori (dengan nama prefix admin.categories)
+    // Manajemen Kategori
     Route::resource('categories', CategoryController::class)->names('categories');
     
     // Menampilkan kategori berdasarkan slug
@@ -78,13 +90,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('/setting', [AdminController::class, 'updateSetting'])->name('setting.update');
 });
 
-
-    Route::middleware(['auth', 'admin'])->prefix('admin/blogs')->name('admin.blogs.')->group(function () {
-        Route::get('/', [AdminController::class, 'blogs'])->name('list');
-        Route::get('/create', [AdminController::class, 'createBlog'])->name('create');
-        Route::post('/', [AdminController::class, 'storeBlog'])->name('store');
-        Route::get('/edit/{id}', [AdminController::class, 'editBlog'])->name('edit');
-        Route::put('/{id}', [AdminController::class, 'updateBlog'])->name('update');
-        Route::delete('/{id}', [AdminController::class, 'deleteBlog'])->name('destroy');
-    });
-    
+// Manajemen Blog oleh Admin
+Route::middleware(['auth', 'admin'])->prefix('admin/blogs')->name('admin.blogs.')->group(function () {
+    Route::get('/', [AdminController::class, 'blogs'])->name('list');
+    Route::get('/create', [AdminController::class, 'createBlog'])->name('create');
+    Route::post('/', [AdminController::class, 'storeBlog'])->name('store');
+    Route::get('/edit/{id}', [AdminController::class, 'editBlog'])->name('edit');
+    Route::put('/{id}', [AdminController::class, 'updateBlog'])->name('update');
+    Route::delete('/{id}', [AdminController::class, 'deleteBlog'])->name('destroy');
+});

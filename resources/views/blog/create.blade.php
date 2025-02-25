@@ -16,6 +16,16 @@
         </div>
 
         <div class="mb-4">
+            <label class="block text-gray-700 font-semibold mb-2">Kategori</label>
+            <select name="category_id" class="w-full border rounded-lg p-2" required>
+                <option value="" disabled selected>Pilih kategori</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+        </div>
+
+        <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Gambar Landscape (header)</label>
             <input type="file" name="landscape_image" class="w-full border rounded-lg p-2" required>
         </div>

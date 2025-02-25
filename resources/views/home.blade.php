@@ -10,7 +10,6 @@
     <div class="absolute inset-0 bg-purple-600 bg-opacity-70"></div>
 
     <!-- Content -->
-
     <div class="container mx-auto px-6 text-center z-10" data-aos="fade-up">
         <h1 class="text-5xl md:text-6xl font-bold mb-8 animate-pulse text-white">Welcome to Go Blog ^_^</h1>
         <p class="text-xl md:text-2xl mb-12 text-gray-200">Discover amazing stories and insights</p>

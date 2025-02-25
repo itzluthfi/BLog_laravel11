@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\Favorite;
+use App\Models\Comment;
 use App\Models\User;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -20,10 +23,11 @@ class BlogController extends Controller
 
 
     public function create()
-    {
-        $authors = Auth::user();
-        return view('blog.create', compact('authors'));
-    }
+{
+    $authors = Auth::user();
+    $categories = Category::all(); // Ambil kategori dari database
+    return view('blog.create', compact('authors', 'categories'));
+}
 
    
     public function store(Request $request)
@@ -33,6 +37,7 @@ class BlogController extends Controller
             'title' => 'required|string|max:255',
             'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required|exists:categories,id',
             'description' => 'required|string',
             'full_content' => 'required|string',
             
@@ -53,6 +58,7 @@ class BlogController extends Controller
             $validated['portrait_image'] = 'storage/blog_images/' . $portraitFilename;
         }
 
+        $validated['category_id'] = $request->category_id;
         $validated['author_id'] = Auth::id();
         $validated['published_at'] = now(); 
     
@@ -66,14 +72,26 @@ class BlogController extends Controller
    
     public function show(Blog $blog)
     {
-        return view('blog.detail', compact('blog'));
+        $comments = Comment::where('blog_id', $blog->id)
+                    ->whereNull('parent_id') // Ambil hanya komentar utama
+                    ->with([
+                        'user', 
+                        'likes', 
+                        'replies.user', // Ambil user dari balasan
+                        'replies.likes' // Ambil likes dari balasan
+                    ])
+                    ->latest() // Urutkan komentar utama dari terbaru
+                    ->get();
+    
+        return view('blog.detail', compact('blog', 'comments'));
     }
+    
 
    
     public function edit(Blog $blog)
     {
-        $authors = User::all();
-        return view('blog.edit', compact('blog'));
+        $categories = Category::all();
+        return view('blog.edit', compact('blog', 'categories'));
     }
     
 
@@ -88,7 +106,7 @@ class BlogController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'full_content' => 'required|string',
-            // 'published_at' => 'required|date',
+            // 'category_id' => 'required|exists:categories,id',
             'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -127,6 +145,8 @@ class BlogController extends Controller
             $validated['portrait_image'] = $blog->portrait_image;
         }
     
+        // $validated['category_id'] = $request->category_id;
+        
         // Update data blog
         $blog->update($validated);
     
@@ -158,5 +178,28 @@ class BlogController extends Controller
         $path = 'blog_images/' . $imageName;
         Storage::disk('public')->put($path, $imageContents);
         return $path;
+    }
+
+     /**
+     * Menambah atau menghapus blog dari favorit.
+     */
+    public function favorite($blogId)
+    {
+        $user = Auth::user();
+        $favorite = Favorite::where('user_id', $user->id)
+                            ->where('blog_id', $blogId)
+                            ->first();
+
+        if ($favorite) {
+            $favorite->delete();
+            return back()->with('success', 'Blog dihapus dari favorit.');
+        }
+
+        Favorite::create([
+            'user_id' => $user->id,
+            'blog_id' => $blogId,
+        ]);
+
+        return back()->with('success', 'Blog berhasil ditambahkan ke favorit!');
     }
 }
