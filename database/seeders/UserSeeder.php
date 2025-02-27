@@ -6,6 +6,8 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class UserSeeder extends Seeder
 {
@@ -19,7 +21,22 @@ class UserSeeder extends Seeder
         $userRole = Role::where('name', 'User')->first();
         $superAdminRole = Role::where('name', 'Superadmin')->first();
 
-        // Insert user spesifik
+        // Fungsi untuk mengunduh dan menyimpan gambar profil
+        function downloadProfileImage($email)
+        {
+            $avatarUrl = "https://i.pravatar.cc/50?u=" . md5($email);
+            $imageName = 'user_images/profile_' . Str::random(10) . '.jpg';
+
+            $imageContents = @file_get_contents($avatarUrl);
+            if ($imageContents !== false) {
+                Storage::disk('public')->put($imageName, $imageContents);
+                return 'storage/'.$imageName;
+            }
+
+            return 'user_images/default.jpg'; // Jika gagal, pakai default
+        }
+
+        // Insert user spesifik dengan gambar profil
         User::query()->insert([
             [
                 'username' => 'admin_user',
@@ -27,6 +44,7 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role_id' => $adminRole->id ?? null,
                 'email_verified_at' => now(),
+                'profile_image' => downloadProfileImage('wangja@gmail.com'),
                 'created_at' => now(),
             ],
             [
@@ -35,8 +53,8 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role_id' => $userRole->id ?? null,
                 'email_verified_at' => now(),
+                'profile_image' => downloadProfileImage('freya@gmail.com'),
                 'created_at' => now(),
-
             ],
             [
                 'username' => 'superadmin_user',
@@ -44,8 +62,8 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role_id' => $superAdminRole->id ?? null,
                 'email_verified_at' => now(),
+                'profile_image' => downloadProfileImage('sidqi961@gmail.com'),
                 'created_at' => now(),
-
             ],
         ]);
 

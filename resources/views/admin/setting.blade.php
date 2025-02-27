@@ -16,13 +16,13 @@
 
         <div>
             <label class="block text-gray-700">Username</label>
-            <input type="text" name="username" value="{{ old('username', $admin->username) }}" class="w-full border p-2 rounded-lg">
+            <input type="text" name="username" value="{{ old('username', $user->username) }}" class="w-full border p-2 rounded-lg">
             @error('username') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
         </div>
 
         <div>
             <label class="block text-gray-700">Email</label>
-            <input type="email" name="email" value="{{ old('email', $admin->email) }}" class="w-full border p-2 rounded-lg">
+            <input type="email" name="email" value="{{ old('email', $user->email) }}" class="w-full border p-2 rounded-lg">
             @error('email') <p class="text-red-500 text-sm">{{ $message }}</p> @enderror
         </div>
 

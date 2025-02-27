@@ -29,6 +29,12 @@ class Blog extends Model
         'published_at' => 'datetime',
     ];
 
+    public function getRouteKeyName()
+{
+    return 'slug';
+}
+
+
 
     public function comments()
     {
@@ -54,13 +60,13 @@ class Blog extends Model
     
 
      // Akses Gambar dengan URL Storage
-     public function getLandscapeImageUrlAttribute()
-     {
-         return Storage::url($this->landscape_image);
-     }
+    //  public function getLandscapeImageUrlAttribute()
+    //  {
+    //      return Storage::url($this->landscape_image);
+    //  }
  
-     public function getPortraitImageUrlAttribute()
-     {
-         return Storage::url($this->portrait_image);
-     }
+    //  public function getPortraitImageUrlAttribute()
+    //  {
+    //      return Storage::url($this->portrait_image);
+    //  }
 }

@@ -28,6 +28,7 @@
             <thead>
                 <tr class="bg-indigo-100 text-gray-700">
                     <th class="p-3 text-left">Judul</th>
+                    <th class="p-3 text-left">Category</th>
                     <th class="p-3 text-left">Penulis</th>
                     <th class="p-3 text-left">Tanggal Publikasi</th>
                     <th class="p-3 text-center">Aksi</th>
@@ -37,6 +38,7 @@
                 @forelse ($blogs as $blog)
                 <tr class="border-b hover:bg-gray-50">
                     <td class="p-3">{{ $blog->title }}</td>
+                    <td class="p-3">{{ $blog->category->name }}</td>
                     <td class="p-3">
                         {{ $blog->author ? $blog->author->username : 'Tidak Ada Author' }}
                     </td>

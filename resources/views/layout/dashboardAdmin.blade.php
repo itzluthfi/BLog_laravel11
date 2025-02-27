@@ -22,7 +22,7 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <div class="flex items-center">
                 <i class="ri-admin-line text-2xl text-indigo-600 mr-2"></i>
-                <span class="text-2xl font-bold text-gray-800">Admin Panel</span>
+                <span class="text-2xl font-bold text-gray-800">Go Blogs^_^</span>
             </div>
             <div class="flex items-center space-x-4">
                 <a href="{{ route('home') }}" class="text-gray-600 hover:text-indigo-600 transition">
@@ -41,10 +41,10 @@
         <aside class="w-64 bg-white border-r shadow-lg overflow-y-auto">
             <div class="p-4">
                 <div class="flex items-center mb-6">
-                    <img src="https://via.placeholder.com/100" alt="Admin Avatar" class="w-16 h-16 rounded-full mr-4 border-4 border-indigo-100">
+                    <img src="{{ asset(e($user->profile_image)) }}" alt="Admin Avatar" class="w-16 h-16 rounded-full mr-4 border-4 border-indigo-100">
                     <div>
-                        <h2 class="text-lg font-bold text-gray-800">Admin</h2>
-                        <p class="text-sm text-gray-500">Administrator</p>
+                        <h2 class="text-lg font-bold text-gray-800">{{ $user->username }}</h2>
+                        <p class="text-sm text-gray-500">{{ $user->role->name }}</p>
                     </div>
                 </div>
 
@@ -82,7 +82,7 @@
                         </li>
                         
                         <li>
-                            <form action="{{route('logout')}}" method="POST" class="sidebar-menu text-red-500 hover:bg-red-50">
+                            <form action="{{route('logout')}}" method="POST" class="sidebar-menu text-red-500 hover:bg-red-50" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
                                 @csrf
                                 <i class="ri-logout-box-r-line"></i>
                                 <button type="submit">Logout</button>

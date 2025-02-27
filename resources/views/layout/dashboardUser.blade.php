@@ -37,13 +37,14 @@
     <!-- Layout dengan Sidebar -->
     <div class="flex h-screen pt-16">
         <!-- Sidebar -->
+        {{-- {{dd($user->profile_image)}} --}}
         <aside class="w-64 bg-white border-r shadow-lg overflow-y-auto">
             <div class="p-4">
                 <div class="flex items-center mb-6">
-                    <img src="https://via.placeholder.com/100" alt="Avatar" class="w-16 h-16 rounded-full mr-4 border-4 border-indigo-100">
+                    <img src="{{ asset( $user->profile_image) }}" alt="Avatar-{{$user->username}}" class="w-16 h-16 rounded-full mr-4 border-4 border-indigo-100">
                     <div>
-                        <h2 class="text-lg font-bold text-gray-800">John Doe</h2>
-                        <p class="text-sm text-gray-500">@johndoe</p>
+                        <h2 class="text-lg font-bold text-gray-800">{{$user->username}}</h2>
+                        <p class="text-sm text-gray-500">{{$user->email}}</p>
                     </div>
                 </div>
 

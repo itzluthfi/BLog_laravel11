@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -21,36 +22,22 @@ class AdminController extends Controller
         $latestBlogs = Blog::with('author')->latest()->take(5)->get(); // Perbaikan typo
         $categoryNames = ['Teknologi', 'Bisnis', 'Kesehatan', 'Olahraga', 'Hiburan'];
         $articleCounts = [10, 15, 8, 12, 20];
+
+        $user = Auth::user();
     
-        return view('admin.dashboard', compact('totalUsers', 'totalBlogs', 'latestBlogs', 'categoryNames', 'articleCounts'));
+        return view('admin.dashboard', compact('user','totalUsers', 'totalBlogs', 'latestBlogs', 'categoryNames', 'articleCounts'));
     }
 
-    /**
-     * Menampilkan daftar user
-     */
-    public function users(Request $request)
-    {
-        $query = User::with('role');
-    
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where('username', 'like', "%$search%")
-                  ->orWhere('email', 'like', "%$search%");
-        }
-    
-        $users = $query->paginate(10);
-    
-        return view('admin.users.list', compact('users'));
-    }
+  
+    // BLOG
     public function blogs(Request $request)
 
     {
-        $query = Blog::with('author');
-    
+        $query = Blog::with('author')->with('category');
         if ($request->has('search')) {
             $search = $request->search;
             $query->where('title', 'like', "%$search%")
-                //   ->orWhere('description', 'like', "%$search%")
+                  ->orWhere('slug', 'like', "%$search%")
                   ->orWhereHas('author', function ($authorQuery) use ($search) {
                       $authorQuery->where('username', 'like', "%$search%")
                       ->orWhere('email', 'like', "%$search%");
@@ -64,10 +51,9 @@ class AdminController extends Controller
     }
     
         $blogs = $query->paginate(10);
-        $authors = User::with('role')->get();
-
-    
-        return view('admin.blogs.list', compact('blogs','authors'));
+        $user = Auth::user();
+        
+        return view('admin.blogs.list', compact('blogs','user'));
     }
     
     public function createBlog()
@@ -84,8 +70,7 @@ class AdminController extends Controller
             'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'required|string',
             'full_content' => 'required|string',
-            // 'author_id' => 'required|exists:users,id',
-            // 'published_at' => 'required|date',
+            
         ]);
 
         // Simpan file jika ada
@@ -114,7 +99,10 @@ class AdminController extends Controller
     public function editBlog($id)
     {
         $blog = Blog::findOrFail($id);
-        return view('admin.blogs.edit', compact('blog'));
+        $categories = Category::all();
+        $user = Auth::user();
+        
+        return view('admin.blogs.edit', compact('blog','categories','user'));
     }
 
     public function updateBlog(Request $request, $id)
@@ -174,6 +162,26 @@ class AdminController extends Controller
 
     return view('admin.users.add');
 }
+
+
+
+    //USERS
+    public function users(Request $request)
+    {
+        $query = User::with('role');
+    
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where('username', 'like', "%$search%")
+                  ->orWhere('email', 'like', "%$search%");
+        }
+    
+        $users = $query->paginate(10);
+    
+        return view('admin.users.list', compact('users'));
+    }
+
+
 
 public function storeUser(Request $request)
 {
@@ -241,8 +249,8 @@ public function storeUser(Request $request)
 
     public function setting()
     {
-        $admin = Auth::user(); // Pastikan auth middleware aktif
-        return view('admin.setting', compact('admin'));
+        $user = Auth::user(); // Pastikan auth middleware aktif
+        return view('admin.setting', compact('user'));
     }
     
     public function updateSetting(Request $request)

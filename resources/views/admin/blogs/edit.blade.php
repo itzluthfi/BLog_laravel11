@@ -18,12 +18,17 @@
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Kategori</label>
             <select name="category_id" class="w-full border rounded-lg p-2" required>
-                <option value="" disabled selected>Pilih kategori</option>
+                <option value="" disabled>Pilih kategori</option>
+                <option value="{{ $blog->category->id }}" selected>{{ $blog->category->name }}</option>
                 @foreach($categories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @if($category->id != $blog->category->id) {{-- Hindari duplikasi --}}
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    @endif
                 @endforeach
             </select>
         </div>
+        
+        
 
         <div class="mb-4">
             <label class="block text-gray-700">Gambar Saat Ini</label>

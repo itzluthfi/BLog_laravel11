@@ -13,7 +13,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             <!-- Menggunakan komponen blog-card untuk setiap blog -->
             @foreach ($blogs as $blog)
-                <x-blog-card :post="$blog" />
+                <x-blog-card :blog="$blog" />
             @endforeach
         </div>
     </div>
