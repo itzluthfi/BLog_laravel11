@@ -159,8 +159,8 @@ class AdminController extends Controller
 
     public function createUser()
 {
-
-    return view('admin.users.add');
+    $user = Auth::user();
+    return view('admin.users.add',compact('user'));
 }
 
 
@@ -177,8 +177,9 @@ class AdminController extends Controller
         }
     
         $users = $query->paginate(10);
+        $user = Auth::user();
     
-        return view('admin.users.list', compact('users'));
+        return view('admin.users.list', compact('users','user'));
     }
 
 

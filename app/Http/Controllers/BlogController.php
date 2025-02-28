@@ -51,7 +51,7 @@ class BlogController extends Controller
             $validated['landscape_image'] = 'storage/blog_images/' . $landscapeFilename; 
         }
     
-        if ($request->hasFile('portrait_image')) {
+        if ($request->hasFile('portrait_image')) {  
             $portraitImage = $request->file('portrait_image');
             $portraitFilename = 'portrait_' . time() . '-' . $portraitImage->getClientOriginalName();
             $portraitImage->move(public_path('storage/blog_images'), $portraitFilename);

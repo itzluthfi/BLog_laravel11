@@ -17,7 +17,7 @@
 
     <!-- Profil Pengguna -->
     <div class="flex items-center mt-6">
-        <img src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://via.placeholder.com/100' }}" 
+        <img src="{{ asset(e($user->profile_image)) }}" alt="Profile Image"
             class="w-24 h-24 rounded-full border-4 border-indigo-100">
         <div class="ml-4">
             <h2 class="text-lg font-semibold">{{ $user->username }}</h2>

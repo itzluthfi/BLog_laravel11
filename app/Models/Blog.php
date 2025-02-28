@@ -30,11 +30,9 @@ class Blog extends Model
     ];
 
     public function getRouteKeyName()
-{
-    return 'slug';
-}
-
-
+    {
+        return 'slug';
+    }
 
     public function comments()
     {
