@@ -21,8 +21,6 @@ class UserController extends Controller
   
       // Mengupdate data profil
       public function updateSetting(Request $request)
-
-      
       {
         // dd($request->all());
           $validated = $request->validate([
@@ -42,13 +40,10 @@ class UserController extends Controller
       
               $profileImage = $request->file('profile_image');
               $profileFileName = 'profile_' . time() . '-' . $profileImage->getClientOriginalName();
-              $path = $profileImage->move(public_path('storage/user_images'), $profileFileName);
+              $profileImage->move(public_path('storage/user_images'), $profileFileName);
             //   dd($path);
-              
-      
             $validated['profile_image'] = 'storage/user_images/' . $profileFileName;
           }
-      
           // Update data langsung menggunakan $validated
           $user->update($validated);
       
