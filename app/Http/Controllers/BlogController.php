@@ -24,9 +24,9 @@ class BlogController extends Controller
 
     public function create()
 {
-    $authors = Auth::user();
+    $user = Auth::user();
     $categories = Category::all(); // Ambil kategori dari database
-    return view('blog.create', compact('authors', 'categories'));
+    return view('blog.create', compact('user', 'categories'));
 }
 
    
@@ -93,6 +93,30 @@ class BlogController extends Controller
         $categories = Category::all();
         return view('blog.edit', compact('blog', 'categories'));
     }
+
+
+
+    public function storeImageContent(Request $request)
+    {
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = time() . '-' . $file->getClientOriginalName();
+            $destinationPath = public_path('storage/uploads');
+    
+            // Pastikan direktori ada sebelum memindahkan file
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+    
+            // Pindahkan file ke storage/uploads
+            $file->move($destinationPath, $filename);
+    
+            return response()->json(['url' => asset('storage/uploads/' . $filename)]);
+        }
+    
+        return response()->json(['error' => 'No file uploaded'], 400);
+    }
+    
     
 
 
@@ -156,30 +180,20 @@ class BlogController extends Controller
 
     public function destroy(Blog $blog)
     {
-        if ($blog->landscape_image) {
-            Storage::disk('public')->delete($blog->landscape_image);
+        if ($blog->author_id !== Auth::id()) {
+            return redirect()->route('profile.artikelSaya')->with('error', 'Anda tidak berhak menghapus artikel ini.');
         }
-        if ($blog->portrait_image) {
-            Storage::disk('public')->delete($blog->portrait_image);
+
+        if ($blog->landscape_image && Storage::disk('public')->exists($blog->landscape_image)) {
+            Storage::disk('public')->delete($blog->landscape_image);
         }
 
         $blog->delete();
 
-        return redirect()->route('profile.artikelSaya')->with('success', 'Blog berhasil dihapus!');
+        return redirect()->route('profile.artikelSaya')->with('success', 'Artikel berhasil dihapus.');
     }
 
-    /**
-     * Download and save image from a given URL.
-     */
-    private function saveImageFromUrl($url, $prefix)
-    {
-        $imageContents = file_get_contents($url);
-        $imageName = $prefix . '_' . time() . '.jpg';
-        $path = 'blog_images/' . $imageName;
-        Storage::disk('public')->put($path, $imageContents);
-        return $path;
-    }
-
+   
      /**
      * Menambah atau menghapus blog dari favorit.
      */

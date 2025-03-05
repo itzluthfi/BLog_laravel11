@@ -65,20 +65,20 @@
 
                         {{-- Tombol Aksi --}}
                         <div class="mt-4 flex justify-between items-center">
-                            <a href="{{ route('profile.blog.show', $blog->id) }}" 
+                            <a href="{{ route('profile.blog.show', $blog) }}" 
                                 class="text-indigo-600 hover:underline text-sm">
                                 <i class="fas fa-eye"></i> Baca selengkapnya
                             </a>
 
                             <div class="flex gap-3">
                                 {{-- Tombol Edit --}}
-                                <a href="{{ route('profile.blog.edit', $blog->id) }}" 
+                                <a href="{{ route('profile.blog.edit', $blog) }}" 
                                     class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition">
                                     <i class="fas fa-edit"></i>
                                 </a>
 
                                 {{-- Tombol Hapus --}}
-                                <form action="{{ route('profile.blog.destroy', $blog->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus artikel ini?');">
+                                <form action="{{ route('profile.blog.destroy', $blog) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus artikel ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" 

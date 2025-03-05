@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
+use App\Models\Blog;
 use App\Models\User;
 
 // Public Routes (Hanya untuk guest)
@@ -41,11 +42,12 @@ Route::middleware('auth')->group(function () {
     
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::resource('blog', BlogController::class)->except(['index']);
-        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::post('/upload-image-content', [BlogController::class, 'storeImageContent'])->name('upload.image.content');
+        Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
         Route::post('/update', [UserController::class, 'update'])->name('update');
         Route::post('/update-password', [UserController::class, 'updatePassword'])->name('updatePassword');
         Route::get('/artikel-saya', [UserController::class, 'myArticles'])->name('artikelSaya');
-        Route::get('/disukai', fn() => view('profile.artikelDisukai'))->name('disukai');
+        Route::get('/disukai', [UserController::class, 'likedArticles'])->name('artikelDisukai');
         Route::get('/setting', [UserController::class, 'setting'])->name('setting'); 
 
         Route::put('/setting', [UserController::class, 'updateSetting'])->name('setting.update');

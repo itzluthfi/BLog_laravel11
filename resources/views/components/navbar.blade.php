@@ -15,7 +15,7 @@
                         Dashboard Admin
                     </a>
                 @elseif(Auth::user()->role->name == 'User')
-                    <a href="{{ route('profile.index') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">
+                    <a href="{{ route('profile.dashboard') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">
                         My Profile
                     </a>
                 @endif
@@ -66,7 +66,7 @@
 
             @auth
                 <!-- Link My Profile (Hanya muncul jika sudah login) -->
-                <a href="{{ route('profile.index') }}" class="block py-2 text-gray-700 hover:text-indigo-600">My Profile</a>
+                <a href="{{ route('profile.dashboard') }}" class="block py-2 text-gray-700 hover:text-indigo-600">My Profile</a>
                 
                 <form action="{{ route('logout') }}" method="POST" class="mt-4 w-full" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
                     @csrf

@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>Go Blogs ^_^ - @yield('title')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+ 
     <style>
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 8px; }
@@ -51,7 +54,7 @@
                 <nav>
                     <ul class="space-y-1">
                         <li>
-                            <a href="{{ route('profile.index') }}" class="sidebar-menu {{ request()->routeIs('profile.index') ? 'active' : '' }}">
+                            <a href="{{ route('profile.dashboard') }}" class="sidebar-menu {{ request()->routeIs('profile.dashboard') ? 'active' : '' }}">
                                 <i class="ri-user-line"></i>
                                 <span>Profil Saya</span>
                             </a>
@@ -63,7 +66,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('profile.disukai') }}" class="sidebar-menu {{ request()->routeIs('profile.disukai') ? 'active' : '' }}">
+                            <a href="{{ route('profile.artikelDisukai') }}" class="sidebar-menu {{ request()->routeIs('profile.artikelDisukai') ? 'active' : '' }}">
                                 <i class="ri-heart-line"></i>
                                 <span>Artikel Disukai</span>
                             </a>
@@ -105,5 +108,8 @@
             @apply bg-indigo-50 text-indigo-600 font-semibold;
         }
     </style>
+
+    @yield('scripts')
+
 </body>
 </html>

@@ -30,8 +30,9 @@
         <div class="flex flex-col lg:flex-row bg-white p-8 rounded-lg shadow-lg gap-8 max-h-[600px] overflow-hidden overflow-y-auto" data-aos="fade-up">
             <div class="lg:w-3/5 w-full">
                 <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Full Content</h2>
-                <p class="text-gray-700 mb-4">{!! nl2br(e($blog->full_content)) !!}</p>
+                <div class="text-gray-700 mb-4">{!! $blog->full_content !!}</div>
             </div>
+            
             <div class="lg:w-2/5 w-full">
                 <img src="{{ asset(e($blog->portrait_image, ENT_QUOTES, 'UTF-8')) }}" 
                      alt="{{ e($blog->title, ENT_QUOTES, 'UTF-8') }} - Portrait" 

@@ -65,7 +65,7 @@ class AuthController extends Controller
             if (Auth::user()->role->name === 'Admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Login berhasil sebagai Admin!');
             } else {
-                return redirect()->route('profile.index')->with('success', 'Login berhasil sebagai User!');
+                return redirect()->route('profile.dashboard')->with('success', 'Login berhasil sebagai User!');
             }
         }
 

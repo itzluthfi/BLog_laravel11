@@ -13,11 +13,23 @@ use App\Models\Blog;
 class UserController extends Controller
 {
       // Menampilkan halaman profil
-      public function index()
-      {
-          $user = Auth::user(); // Ambil data pengguna yang login
-          return view('profile.index', compact('user'));
-      }
+        public function dashboard()
+        {
+            $user = Auth::user(); // Ambil data pengguna yang login
+
+            $totalBlogs = Blog::where('author_id', $user->id)->count();
+            // dd($totalBlog);
+
+            // Ambil 3 blog terbaru berdasarkan created_at DESC
+            $lastestBlogs = Blog::where('author_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->limit(3)
+                ->get();
+            
+
+            return view('profile.dashboard', compact('user', 'totalBlogs', 'lastestBlogs'));
+        }
+
   
       // Mengupdate data profil
       public function updateSetting(Request $request)
@@ -47,7 +59,7 @@ class UserController extends Controller
           // Update data langsung menggunakan $validated
           $user->update($validated);
       
-          return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui.');
+          return redirect()->route('profile.dashboard')->with('success', 'Profil berhasil diperbarui.');
       }
   
       // Mengupdate password
@@ -69,13 +81,23 @@ class UserController extends Controller
           $user->password = Hash::make($request->new_password);
           $user->save();
   
-          return redirect()->route('profile.index')->with('success', 'Password berhasil diperbarui.');
+          return redirect()->route('profile.dashboard')->with('success', 'Password berhasil diperbarui.');
       }
   
       public function myArticles()
   {
+      $user = Auth::user();
       $blogs = Blog::where('author_id', Auth::id())->latest()->get();
-      return view('profile.artikelSaya', compact('blogs'));
+      return view('profile.artikelSaya', compact('blogs','user'));
+  }
+
+  public function likedArticles()
+  {
+      $user = Auth::user();
+    //   $blogs = Blog::whereHas('likes', function ($query) use ($user) {
+    //       $query->where('user_id', $user->id);
+    //   })->latest()->get();
+      return view('profile.artikelDisukai', compact('user'));
   }
 
   public function setting()
