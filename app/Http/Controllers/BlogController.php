@@ -72,6 +72,7 @@ class BlogController extends Controller
    
     public function show(Blog $blog)
     {
+        $user = Auth::user();
         $comments = Comment::where('blog_id', $blog->id)
                     ->whereNull('parent_id') // Ambil hanya komentar utama
                     ->with([
@@ -90,8 +91,9 @@ class BlogController extends Controller
    
     public function edit(Blog $blog)
     {
+        $user = Auth::user();
         $categories = Category::all();
-        return view('blog.edit', compact('blog', 'categories'));
+        return view('blog.edit', compact('blog', 'user','categories'));
     }
 
 

@@ -6,16 +6,12 @@
 <div class="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
     <h2 class="text-2xl font-bold text-gray-800 mb-4">Edit Artikel</h2>
     
-    <form action="{{ route('profile.blog.update', $blog->id) }}" method="POST" enctype="multipart/form-data">
+    <form id="artikelForm" action="{{ route('profile.blog.update', $blog->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <input type="hidden" name="author_id" value="{{ $blog->author_id }}">
-        {{-- Gambar Header --}}
         <input type="hidden" name="old_landscape_image" value="{{ $blog->landscape_image }}">
-
-        {{-- Gambar Portrait --}}
         <input type="hidden" name="old_portrait_image" value="{{ $blog->portrait_image }}">
-
 
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Judul</label>
@@ -25,14 +21,15 @@
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Kategori</label>
             <select name="category_id" class="w-full border rounded-lg p-2" required>
-                <option value="" disabled selected>Pilih kategori</option>
+                <option value="" disabled>Pilih kategori</option>
                 @foreach($categories as $category)
-                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                    <option value="{{ $category->id }}" {{ old('category_id', $blog->category_id) == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
                 @endforeach
             </select>
         </div>
 
-        {{-- Gambar Header --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Gambar Header</label>
             <input type="file" name="landscape_image" class="w-full border rounded-lg p-2" id="headerImageInput">
@@ -43,7 +40,6 @@
             </div>
         </div>
 
-        {{-- Gambar Portrait --}}
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Gambar Portrait</label>
             <input type="file" name="portrait_image" class="w-full border rounded-lg p-2" id="portraitImageInput">
@@ -61,15 +57,9 @@
 
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Konten Lengkap</label>
-            <textarea name="full_content" class="w-full border rounded-lg p-2" rows="6" required>{{ old('full_content', $blog->full_content) }}</textarea>
+            <div id="editor" class="w-full border rounded-lg p-2"></div>
+            <textarea name="full_content" id="full_content" class="hidden">{{ old('full_content', $blog->full_content) }}</textarea>
         </div>
-
-        {{-- Tanggal Publikasi --}}
-        {{-- <div class="mb-4">
-            <label class="block text-gray-700 font-semibold mb-2">Tanggal Publikasi</label>
-            <input type="date" name="published_at" class="w-full border rounded-lg p-2" 
-                   value="{{ old('published_at', $blog->published_at ? $blog->published_at->format('Y-m-d') : '') }}" required>
-        </div> --}}
 
         <div class="flex flex-wrap gap-3">
             <button type="submit" class="w-full sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">
@@ -81,9 +71,36 @@
         </div>
     </form>
 </div>
+@endsection
 
-{{-- JavaScript untuk menampilkan preview gambar --}}
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+
 <script>
+document.addEventListener("DOMContentLoaded", function() {
+    var quill = new Quill('#editor', {
+        theme: 'snow',
+        modules: {
+            toolbar: [
+                [{ 'header': [1, 2, false] }],
+                ['bold', 'italic', 'underline'],
+                ['image', 'blockquote', 'code-block'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['clean']
+            ]
+        }
+    });
+
+    let fullContent = `{!! addslashes(old('full_content', $blog->full_content)) !!}`;
+    quill.root.innerHTML = fullContent;
+
+    document.getElementById('artikelForm').onsubmit = function() {
+        document.getElementById('full_content').value = quill.root.innerHTML;
+    };
+});
+
+// JavaScript untuk preview gambar
 function previewImage(inputId, previewId) {
     document.getElementById(inputId).addEventListener('change', function(event) {
         let file = event.target.files[0];
@@ -103,5 +120,4 @@ function previewImage(inputId, previewId) {
 previewImage('headerImageInput', 'headerImagePreview');
 previewImage('portraitImageInput', 'portraitImagePreview');
 </script>
-
 @endsection

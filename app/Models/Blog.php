@@ -11,7 +11,6 @@ class Blog extends Model
 {
     use HasFactory;
 
-    // Tentukan kolom mana yang dapat diisi (fillable)
     protected $fillable = [
         'title', 
         'category_id',
@@ -56,15 +55,4 @@ class Blog extends Model
         $this->attributes['slug'] = Str::slug($value);
     }
     
-
-     // Akses Gambar dengan URL Storage
-    //  public function getLandscapeImageUrlAttribute()
-    //  {
-    //      return Storage::url($this->landscape_image);
-    //  }
- 
-    //  public function getPortraitImageUrlAttribute()
-    //  {
-    //      return Storage::url($this->portrait_image);
-    //  }
 }

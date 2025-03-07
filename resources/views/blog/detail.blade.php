@@ -161,7 +161,7 @@
 <!-- Form Tambah Komentar -->
 <div class="mt-6">
     <h4 class="text-lg font-semibold text-gray-800">Add a Comment</h4>
-    <form id="comment-form" action="{{ route('comments.store', $blog->id) }}" method="POST" class="mt-3">
+    <form id="comment-form" action="{{ route('comments.store', $blog) }}" method="POST" class="mt-3">
         @csrf
         <input type="hidden" id="parent-id" name="parent_id" value="">
 
