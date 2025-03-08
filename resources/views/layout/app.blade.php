@@ -21,9 +21,9 @@
 <body class="bg-gray-50 text-gray-800">
     <x-navbar />
 
-    {{-- @include('components.header', ['title_page' => $title_page ?? 'Default Title Page']) --}}
+
     <main class="pt-15 mb-11">
-        <div class="container mx-auto px-6">
+        <div class="container mx-auto px-6 min-h-screen">
             @yield('content')
         </div>
     </main>

@@ -40,7 +40,10 @@
     <!-- Layout dengan Sidebar -->
     <div class="flex h-screen pt-16">
         <!-- Sidebar -->
-        {{-- {{dd($user->profile_image)}} --}}
+        @php
+          $user = Auth::user();
+        @endphp
+        
         <aside class="w-64 bg-white border-r shadow-lg overflow-y-auto">
             <div class="p-4">
                 <div class="flex items-center mb-6">

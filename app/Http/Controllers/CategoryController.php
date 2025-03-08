@@ -13,8 +13,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::latest()->get();
-        $user = Auth::user();
-        return view('admin.categories.list', compact('categories','user'));
+        return view('admin.categories.list', compact('categories'));
     }
 
     // Menampilkan form tambah kategori

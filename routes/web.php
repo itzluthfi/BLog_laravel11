@@ -83,7 +83,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Manajemen Kategori
     Route::resource('categories', CategoryController::class)->names('categories');
-    
     // Menampilkan kategori berdasarkan slug
     Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('categories.show');
 
@@ -97,7 +96,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin/blogs')->name('admin.blogs.'
     Route::get('/', [AdminController::class, 'blogs'])->name('list');
     Route::get('/create', [AdminController::class, 'createBlog'])->name('create');
     Route::post('/', [AdminController::class, 'storeBlog'])->name('store');
-    Route::get('/edit/{id}', [AdminController::class, 'editBlog'])->name('edit');
-    Route::put('/{id}', [AdminController::class, 'updateBlog'])->name('update');
-    Route::delete('/{id}', [AdminController::class, 'deleteBlog'])->name('destroy');
+    Route::get('/edit/{slug}', [AdminController::class, 'editBlog'])->name('edit');
+    Route::put('/{slug}', [AdminController::class, 'updateBlog'])->name('update');
+    Route::delete('/{slug}', [AdminController::class, 'deleteBlog'])->name('destroy');
 });

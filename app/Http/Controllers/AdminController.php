@@ -5,28 +5,44 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Blog;
 use App\Models\Category;
+use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
     /**
      * Menampilkan dashboard admin
      */
+
     public function dashboard()
     {
         $totalUsers = User::count();
         $totalBlogs = Blog::count();
-        $latestBlogs = Blog::with('author')->latest()->take(5)->get(); // Perbaikan typo
-        $categoryNames = ['Teknologi', 'Bisnis', 'Kesehatan', 'Olahraga', 'Hiburan'];
-        $articleCounts = [10, 15, 8, 12, 20];
-
-        $user = Auth::user();
+        $totalComments = Comment::count();
+        $totalCategories = Category::count();
+        $latestBlogs = Blog::with('author')->latest()->take(5)->get();
+        // Ambil jumlah artikel per kategori
+        $articlesByCategory = Blog::select('category_id', DB::raw('count(*) as total'))
+            ->groupBy('category_id')
+            ->get();
     
-        return view('admin.dashboard', compact('user','totalUsers', 'totalBlogs', 'latestBlogs', 'categoryNames', 'articleCounts'));
+        // Ambil nama kategori dan jumlahnya
+        $categoryNames = [];
+        $articleCounts = [];
+    
+        foreach ($articlesByCategory as $category) {
+            $categoryName = Category::find($category->category_id)->name ?? 'Tanpa Kategori';
+            $categoryNames[] = $categoryName;
+            $articleCounts[] = $category->total;
+        }
+    
+        return view('admin.dashboard', compact('totalUsers', 'totalBlogs', 'latestBlogs', 'categoryNames', 'articleCounts','totalComments','totalCategories'));
     }
+    
 
   
     // BLOG
@@ -51,14 +67,14 @@ class AdminController extends Controller
     }
     
         $blogs = $query->paginate(10);
-        $user = Auth::user();
         
-        return view('admin.blogs.list', compact('blogs','user'));
+        return view('admin.blogs.list', compact('blogs',));
     }
     
     public function createBlog()
     {
         $authors = User::with('role')->get();
+
         return view('admin.blogs.add', compact('authors'));
     }
 
@@ -96,14 +112,15 @@ class AdminController extends Controller
         return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil ditambahkan!');
     }
 
-    public function editBlog($id)
+    public function editBlog($slug)
     {
-        $blog = Blog::findOrFail($id);
+        $blog = Blog::where('slug', $slug)->firstOrFail(); 
         $categories = Category::all();
         $user = Auth::user();
         
-        return view('admin.blogs.edit', compact('blog','categories','user'));
+        return view('admin.blogs.edit', compact('blog', 'categories', 'user'));
     }
+    
 
     public function updateBlog(Request $request, $id)
     {
@@ -177,9 +194,8 @@ class AdminController extends Controller
         }
     
         $users = $query->paginate(10);
-        $user = Auth::user();
     
-        return view('admin.users.list', compact('users','user'));
+        return view('admin.users.list', compact('users'));
     }
 
 

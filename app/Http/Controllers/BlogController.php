@@ -24,9 +24,8 @@ class BlogController extends Controller
 
     public function create()
 {
-    $user = Auth::user();
     $categories = Category::all(); // Ambil kategori dari database
-    return view('blog.create', compact('user', 'categories'));
+    return view('blog.create', compact('categories'));
 }
 
    
@@ -91,9 +90,8 @@ class BlogController extends Controller
    
     public function edit(Blog $blog)
     {
-        $user = Auth::user();
         $categories = Category::all();
-        return view('blog.edit', compact('blog', 'user','categories'));
+        return view('blog.edit', compact('blog', 'categories'));
     }
 
 

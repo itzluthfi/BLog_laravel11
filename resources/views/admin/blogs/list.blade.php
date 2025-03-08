@@ -53,10 +53,10 @@
                     
                     
                     <td class="p-3 flex justify-center space-x-2">
-                        <a href="{{ route('admin.blogs.edit', $blog) }}" class="text-blue-500 hover:underline">
+                        <a href="{{ route('admin.blogs.edit', $blog->slug) }}" class="text-blue-500 hover:underline">
                             <i class="ri-edit-line"></i>
                         </a>
-                        <form action="{{ route('admin.blogs.destroy', $blog) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus blog ini?');">
+                        <form action="{{ route('admin.blogs.destroy', $blog->slug) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus blog ini?');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-500 hover:underline">

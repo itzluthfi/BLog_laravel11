@@ -12,8 +12,8 @@
             $stats = [
                 ['icon' => 'ri-user-line', 'title' => 'Total Pengguna', 'count' => $totalUsers, 'color' => 'bg-indigo-500'],
                 ['icon' => 'ri-article-line', 'title' => 'Total Artikel', 'count' => $totalBlogs, 'color' => 'bg-green-500'],
-                ['icon' => 'ri-chat-3-line', 'title' => 'Total Komentar', 'count' => 24, 'color' => 'bg-yellow-500'],
-                ['icon' => 'ri-folder-line', 'title' => 'Total Kategori', 'count' => 10, 'color' => 'bg-red-500'],
+                ['icon' => 'ri-chat-3-line', 'title' => 'Total Komentar', 'count' => $totalComments, 'color' => 'bg-yellow-500'],
+                ['icon' => 'ri-folder-line', 'title' => 'Total Kategori', 'count' => $totalCategories, 'color' => 'bg-red-500'],
             ];
         @endphp
 
@@ -55,7 +55,7 @@
                     <tr class="border-t border-gray-200 hover:bg-gray-50">
                         <td class="py-3 px-4">{{ $blog->title }}</td>
                         <td class="py-3 px-4">{{ $blog->category->name ?? 'N/A' }}</td>
-                        <td class="py-3 px-4">{{ $blog->author->name }}</td>
+                        <td class="py-3 px-4">{{ $blog->author->username }}</td>
                         <td class="py-3 px-4">{{ $blog->created_at->format('d M Y') }}</td>
                         <td class="py-3 px-4 italic">{{ $blog->updated_at->diffForHumans() }}</td>
                     </tr>
