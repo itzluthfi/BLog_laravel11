@@ -7,8 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
-use App\Models\Blog;
-use App\Models\User;
+
 
 // Public Routes (Hanya untuk guest)
 Route::middleware('guest')->group(function () {
@@ -81,15 +80,21 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/users/add', [AdminController::class, 'createUser'])->name('users.add');
     Route::post('/user/store', [AdminController::class, 'storeUser'])->name('users.store');
 
-    // Manajemen Kategori
-    Route::resource('categories', CategoryController::class)->names('categories');
-    // Menampilkan kategori berdasarkan slug
-    Route::get('/category/{slug}', [CategoryController::class, 'show'])->name('categories.show');
-
+   
     // Pengaturan
     Route::get('/setting', [AdminController::class, 'setting'])->name('setting'); 
     Route::put('/setting', [AdminController::class, 'updateSetting'])->name('setting.update');
 });
+
+Route::prefix('admin/categories')->name('admin.categories.')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/', [CategoryController::class, 'index'])->name('index'); 
+    Route::get('/create', [CategoryController::class, 'create'])->name('create'); 
+    Route::post('/', [CategoryController::class, 'store'])->name('store'); 
+    Route::get('/{slug}/edit', [CategoryController::class, 'edit'])->name('edit'); 
+    Route::put('/{slug}', [CategoryController::class, 'update'])->name('update'); 
+    Route::delete('/{slug}', [CategoryController::class, 'destroy'])->name('destroy'); 
+});
+
 
 // Manajemen Blog oleh Admin
 Route::middleware(['auth', 'admin'])->prefix('admin/blogs')->name('admin.blogs.')->group(function () {

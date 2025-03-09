@@ -6,9 +6,7 @@
 <div class="bg-white p-6 rounded-lg shadow">
     <h2 class="text-2xl font-semibold text-gray-800 mb-4">Pengaturan Akun</h2>
 
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-3 rounded mb-4">{{ session('success') }}</div>
-    @endif
+   
 
     <form action="{{ route('profile.setting.update') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
         @csrf

@@ -3,7 +3,7 @@
 @section('title_page', 'Post Detail')
 
 @section('content')
-<section class="w-full bg-gray-50 py-20 sm:py-10">
+<section class="w-full bg-gray-50 py-20 sm:py-10 mt-12">
     <div class="container max-w-screen mx-auto px-4 sm:px-6 md:px-8">
 
         <!-- Title -->

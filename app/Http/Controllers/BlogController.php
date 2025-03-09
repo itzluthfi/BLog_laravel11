@@ -10,210 +10,211 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-
+use Exception;
 
 class BlogController extends Controller
 {
-    
     public function index()
     {
-        $blogs = Blog::latest()->get();
-        return view('blog.index', compact('blogs'));
+        try {
+            $blogs = Blog::latest()->get();
+            return view('blog.index', compact('blogs'));
+        } catch (Exception $e) {
+            return back()->with('error', 'Gagal memuat daftar blog: ' . $e->getMessage());
+        }
     }
-
 
     public function create()
-{
-    $categories = Category::all(); // Ambil kategori dari database
-    return view('blog.create', compact('categories'));
-}
+    {
+        try {
+            $categories = Category::all();
+            return view('blog.create', compact('categories'));
+        } catch (Exception $e) {
+            return back()->with('error', 'Gagal memuat halaman tambah blog: ' . $e->getMessage());
+        }
+    }
 
-   
     public function store(Request $request)
     {
-        // Validasi request
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'category_id' => 'required|exists:categories,id',
-            'description' => 'required|string',
-            'full_content' => 'required|string',
-            
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'description' => 'required|string',
+                'category_id' => 'required|exists:categories,id',
+                'full_content' => 'required|string',
+            ]);
     
-        // Simpan file jika ada
-        if ($request->hasFile('landscape_image')) {
-            $landscapeImage = $request->file('landscape_image');
-            $landscapeFilename = 'landscape_' . time() . '-' . $landscapeImage->getClientOriginalName();
-            $landscapeImage->move(public_path('storage/blog_images'), $landscapeFilename);
-            $validated['landscape_image'] = 'storage/blog_images/' . $landscapeFilename; 
+            if ($request->hasFile('landscape_image')) {
+                $landscapeImage = $request->file('landscape_image');
+                $landscapeFilename = 'landscape_' . time() . '-' . $landscapeImage->getClientOriginalName();
+                $landscapeImage->move(public_path('storage/blog_images'), $landscapeFilename);
+                $validated['landscape_image'] = 'storage/blog_images/' . $landscapeFilename; 
+            }
+    
+            if ($request->hasFile('portrait_image')) {
+                $portraitImage = $request->file('portrait_image');
+                $portraitFilename = 'portrait_' . time() . '-' . $portraitImage->getClientOriginalName();
+                $portraitImage->move(public_path('storage/blog_images'), $portraitFilename);
+                $validated['portrait_image'] = 'storage/blog_images/' . $portraitFilename;
+            }
+    
+            $validated['author_id'] = Auth::id();
+            $validated['published_at'] = now(); 
+    
+            Blog::create($validated);
+    
+            return redirect()->route('profile.artikelSaya')->with('success', 'Blog berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-    
-        if ($request->hasFile('portrait_image')) {  
-            $portraitImage = $request->file('portrait_image');
-            $portraitFilename = 'portrait_' . time() . '-' . $portraitImage->getClientOriginalName();
-            $portraitImage->move(public_path('storage/blog_images'), $portraitFilename);
-            $validated['portrait_image'] = 'storage/blog_images/' . $portraitFilename;
-        }
-
-        $validated['category_id'] = $request->category_id;
-        $validated['author_id'] = Auth::id();
-        $validated['published_at'] = now(); 
-    
-        // Simpan ke database
-        Blog::create($validated);
-    
-        return redirect()->route('profile.artikelSaya')->with('success', 'Blog berhasil ditambahkan!');
     }
-    
-    
-   
+
     public function show(Blog $blog)
     {
-        $user = Auth::user();
-        $comments = Comment::where('blog_id', $blog->id)
-                    ->whereNull('parent_id') // Ambil hanya komentar utama
-                    ->with([
-                        'user', 
-                        'likes', 
-                        'replies.user', // Ambil user dari balasan
-                        'replies.likes' // Ambil likes dari balasan
-                    ])
-                    ->latest() // Urutkan komentar utama dari terbaru
-                    ->get();
-    
-        return view('blog.detail', compact('blog', 'comments'));
-    }
-    
+        try {
+            $comments = Comment::where('blog_id', $blog->id)
+                ->whereNull('parent_id')
+                ->with(['user', 'likes', 'replies.user', 'replies.likes'])
+                ->latest()
+                ->get();
 
-   
+            return view('blog.detail', compact('blog', 'comments'));
+        } catch (Exception $e) {
+            return back()->with('error', 'Gagal menampilkan detail blog: ' . $e->getMessage());
+        }
+    }
+
     public function edit(Blog $blog)
     {
-        $categories = Category::all();
-        return view('blog.edit', compact('blog', 'categories'));
+        try {
+            $categories = Category::all();
+            return view('blog.edit', compact('blog', 'categories'));
+        } catch (Exception $e) {
+            return back()->with('error', 'Gagal memuat halaman edit blog: ' . $e->getMessage());
+        }
     }
-
-
 
     public function storeImageContent(Request $request)
     {
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '-' . $file->getClientOriginalName();
-            $destinationPath = public_path('storage/uploads');
-    
-            // Pastikan direktori ada sebelum memindahkan file
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
+        try {
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = time() . '-' . $file->getClientOriginalName();
+                $destinationPath = public_path('storage/uploads');
+                if (!file_exists($destinationPath)) {
+                    mkdir($destinationPath, 0777, true);
+                }
+                $file->move($destinationPath, $filename);
+                return response()->json(['url' => asset('storage/uploads/' . $filename)]);
             }
-    
-            // Pindahkan file ke storage/uploads
-            $file->move($destinationPath, $filename);
-    
-            return response()->json(['url' => asset('storage/uploads/' . $filename)]);
+            return response()->json(['error' => 'No file uploaded'], 400);
+        } catch (Exception $e) {
+            return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
         }
-    
-        return response()->json(['error' => 'No file uploaded'], 400);
     }
-    
-    
-
 
     public function update(Request $request, $id)
     {
-        // dd($request->all());
-        $blog = Blog::findOrFail($id);
+        try {
+            $blog = Blog::findOrFail($id);
     
-        // Validasi data
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'full_content' => 'required|string',
-            // 'category_id' => 'required|exists:categories,id',
-            'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'description' => 'required|string',
+                'category_id' => 'required|exists:categories,id',
+                'full_content' => 'required|string',
+                'published_at' => 'nullable|date',
+            ]);
     
-        // Handle Gambar Header
-        if ($request->hasFile('landscape_image')) {
-            if ($request->old_landscape_image && file_exists(public_path($request->old_landscape_image))) {
-                unlink(public_path($request->old_landscape_image));
-                // dd("file lama berhasil di hapus!", $request->old_landscape_image);
-            }
-            // else{
-            //     dd("file lama tidak ditemukan!");
-            // }
-    
-            $file = $request->file('landscape_image');
-            $filename = 'landscape_' . time() . '-' . $file->getClientOriginalName();
-            $file->move(public_path('storage/blog_images'), $filename);
-            $validated['landscape_image'] = 'storage/blog_images/' . $filename;
-        } else {
-            // Tetap gunakan gambar lama jika tidak ada perubahan
-            $validated['landscape_image'] = $blog->landscape_image;
-        }
-    
-        // Handle Gambar Portrait
-        if ($request->hasFile('portrait_image')) {
-            if ($request->old_portrait_image && file_exists(public_path($request->old_portrait_image))) {
-                unlink(public_path($request->old_portrait_image));
+            if (!$request->filled('published_at')) {
+                unset($validated['published_at']);
             }
     
-            $file = $request->file('portrait_image');
-            $filename = 'portrait_' . time() . '-' . $file->getClientOriginalName();
-            $file->move(public_path('storage/blog_images'), $filename);
-            $validated['portrait_image'] = 'storage/blog_images/' . $filename;
-        } else {
-            // Tetap gunakan gambar lama jika tidak ada perubahan
-            $validated['portrait_image'] = $blog->portrait_image;
+            foreach (['landscape_image', 'portrait_image'] as $imageField) {
+                if ($request->hasFile($imageField)) {
+                    if ($blog->$imageField) {
+                        $this->deleteImage($blog->$imageField);
+                    }
+                    $validated[$imageField] = $request->file($imageField)->store('uploads/blog_images', 'public');
+                } else {
+                    unset($validated[$imageField]);
+                }
+            }
+    
+            $this->deleteUnusedContentImages($blog->full_content, $validated['full_content']);
+    
+            $blog->update($validated);
+    
+            return redirect()->route('profile.artikelSaya')->with('success', 'Blog berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-    
-        // $validated['category_id'] = $request->category_id;
-        
-        // Update data blog
-        $blog->update($validated);
-    
-        return redirect()->route('profile.artikelSaya')->with('success', 'Artikel berhasil diperbarui!');
     }
-    
+
+      // 🔴 Fungsi untuk menghapus gambar dari storage
+      private function deleteImage($imageUrl)
+      {
+          if ($imageUrl) {
+              $path = str_replace('storage/', '', $imageUrl);
+              $filePath = public_path('storage/' . $path);
+  
+              if (file_exists($filePath)) {
+                  unlink($filePath);
+              }
+          }
+      }
+  
+      // 🔴 Fungsi untuk menghapus gambar dalam full_content
+      private function deleteContentImages($fullContent)
+      {
+          preg_match_all('/<img[^>]+src="([^"]+)"/', $fullContent, $matches);
+  
+          foreach ($matches[1] as $imageUrl) {
+              $this->deleteImage($imageUrl);
+          }
+      }
+  
+      // 🔴 Fungsi untuk menghapus gambar lama yang tidak digunakan di full_content baru
+      private function deleteUnusedContentImages($oldContent, $newContent)
+      {
+          preg_match_all('/<img[^>]+src="([^"]+)"/', $oldContent, $oldImages);
+          preg_match_all('/<img[^>]+src="([^"]+)"/', $newContent, $newImages);
+  
+          $oldImages = $oldImages[1] ?? [];
+          $newImages = $newImages[1] ?? [];
+  
+          // Hapus hanya gambar lama yang tidak ada di full_content baru
+          foreach ($oldImages as $oldImage) {
+              if (!in_array($oldImage, $newImages)) {
+                  $this->deleteImage($oldImage);
+              }
+          }
+      }
 
     public function destroy(Blog $blog)
     {
-        if ($blog->author_id !== Auth::id()) {
-            return redirect()->route('profile.artikelSaya')->with('error', 'Anda tidak berhak menghapus artikel ini.');
+        try {
+            if ($blog->author_id !== Auth::id()) {
+                return redirect()->route('profile.artikelSaya')->with('error', 'Anda tidak berhak menghapus artikel ini.');
+            }
+
+            if ($blog->landscape_image && file_exists(public_path($blog->landscape_image))) {
+                unlink(public_path($blog->landscape_image));
+            }
+
+            if ($blog->portrait_image && file_exists(public_path($blog->portrait_image))) {
+                unlink(public_path($blog->portrait_image));
+            }
+
+            $blog->delete();
+
+            return redirect()->route('profile.artikelSaya')->with('success', 'Artikel berhasil dihapus.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan saat menghapus blog.'. $e->getMessage());
         }
-
-        if ($blog->landscape_image && Storage::disk('public')->exists($blog->landscape_image)) {
-            Storage::disk('public')->delete($blog->landscape_image);
-        }
-
-        $blog->delete();
-
-        return redirect()->route('profile.artikelSaya')->with('success', 'Artikel berhasil dihapus.');
-    }
-
-   
-     /**
-     * Menambah atau menghapus blog dari favorit.
-     */
-    public function favorite($blogId)
-    {
-        $user = Auth::user();
-        $favorite = Favorite::where('user_id', $user->id)
-                            ->where('blog_id', $blogId)
-                            ->first();
-
-        if ($favorite) {
-            $favorite->delete();
-            return back()->with('success', 'Blog dihapus dari favorit.');
-        }
-
-        Favorite::create([
-            'user_id' => $user->id,
-            'blog_id' => $blogId,
-        ]);
-
-        return back()->with('success', 'Blog berhasil ditambahkan ke favorit!');
     }
 }

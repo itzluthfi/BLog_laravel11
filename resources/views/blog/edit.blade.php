@@ -78,46 +78,56 @@
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    var quill = new Quill('#editor', {
-        theme: 'snow',
-        modules: {
-            toolbar: [
-                [{ 'header': [1, 2, false] }],
-                ['bold', 'italic', 'underline'],
-                ['image', 'blockquote', 'code-block'],
-                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                ['clean']
-            ]
-        }
-    });
-
-    let fullContent = `{!! addslashes(old('full_content', $blog->full_content)) !!}`;
-    quill.root.innerHTML = fullContent;
-
-    document.getElementById('artikelForm').onsubmit = function() {
-        document.getElementById('full_content').value = quill.root.innerHTML;
-    };
-});
-
-// JavaScript untuk preview gambar
-function previewImage(inputId, previewId) {
-    document.getElementById(inputId).addEventListener('change', function(event) {
-        let file = event.target.files[0];
-        let preview = document.getElementById(previewId);
-
-        if (file) {
-            let reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
+    document.addEventListener("DOMContentLoaded", function() {
+        var quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [1, 2, false] }],
+                    ['bold', 'italic', 'underline'],
+                    ['image', 'blockquote', 'code-block'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['clean']
+                ]
+            }
+        });
+    
+        quill.root.innerHTML = `{!! addslashes($blog->full_content) !!}`;
+    
+        quill.on('text-change', function() {
+            document.getElementById('full_content').value = quill.root.innerHTML;
+        });
+    
+        // Upload gambar baru di editor
+        quill.getModule('toolbar').addHandler('image', function() {
+            let input = document.createElement('input');
+            input.setAttribute('type', 'file');
+            input.setAttribute('accept', 'image/*');
+            input.click();
+    
+            input.onchange = function() {
+                let file = input.files[0];
+                let formData = new FormData();
+                formData.append("image", file);
+    
+                fetch("{{ route('profile.upload.image.content') }}", {
+                    method: "POST",
+                    body: formData,
+                    headers: { "X-CSRF-TOKEN": "{{ csrf_token() }}" }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.url) {
+                        let range = quill.getSelection();
+                        quill.insertEmbed(range.index, "image", data.url);
+                    }
+                })
+                .catch(error => console.error("Upload error:", error));
             };
-            reader.readAsDataURL(file);
-        }
+        });
     });
-}
-
-previewImage('headerImageInput', 'headerImagePreview');
-previewImage('portraitImageInput', 'portraitImagePreview');
-</script>
+    </script>
+    
+    
+    
 @endsection

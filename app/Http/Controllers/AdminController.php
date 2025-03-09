@@ -74,43 +74,48 @@ class AdminController extends Controller
     public function createBlog()
     {
         $authors = User::with('role')->get();
+        $categories = Category::all();
 
-        return view('admin.blogs.add', compact('authors'));
+        return view('admin.blogs.add', compact('authors','categories'));
     }
 
     public function storeBlog(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'description' => 'required|string',
-            'full_content' => 'required|string',
-            
-        ]);
-
-        // Simpan file jika ada
-        if ($request->hasFile('landscape_image')) {
-            $landscapeImage = $request->file('landscape_image');
-            $landscapeFilename = 'landscape_' . time() . '-' . $landscapeImage->getClientOriginalName();
-            $landscapeImage->move(public_path('storage/blog_images'), $landscapeFilename);
-            $validated['landscape_image'] = 'storage/blog_images/' . $landscapeFilename; 
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'description' => 'required|string',
+                'category_id' => 'required|exists:categories,id',
+                'full_content' => 'required|string',
+            ]);
+    
+            if ($request->hasFile('landscape_image')) {
+                $landscapeImage = $request->file('landscape_image');
+                $landscapeFilename = 'landscape_' . time() . '-' . $landscapeImage->getClientOriginalName();
+                $landscapeImage->move(public_path('storage/blog_images'), $landscapeFilename);
+                $validated['landscape_image'] = 'storage/blog_images/' . $landscapeFilename; 
+            }
+    
+            if ($request->hasFile('portrait_image')) {
+                $portraitImage = $request->file('portrait_image');
+                $portraitFilename = 'portrait_' . time() . '-' . $portraitImage->getClientOriginalName();
+                $portraitImage->move(public_path('storage/blog_images'), $portraitFilename);
+                $validated['portrait_image'] = 'storage/blog_images/' . $portraitFilename;
+            }
+    
+            $validated['author_id'] = Auth::id();
+            $validated['published_at'] = now(); 
+    
+            Blog::create($validated);
+    
+            return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-
-        if ($request->hasFile('portrait_image')) {
-            $portraitImage = $request->file('portrait_image');
-            $portraitFilename = 'portrait_' . time() . '-' . $portraitImage->getClientOriginalName();
-            $portraitImage->move(public_path('storage/blog_images'), $portraitFilename);
-            $validated['portrait_image'] = 'storage/blog_images/' . $portraitFilename;
-        }
-
-        $validated['author_id'] = Auth::id();
-        $validated['published_at'] = now(); 
-
-        Blog::create($validated);
-
-        return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil ditambahkan!');
     }
+    
 
     public function editBlog($slug)
     {
@@ -122,57 +127,111 @@ class AdminController extends Controller
     }
     
 
+
     public function updateBlog(Request $request, $id)
     {
-    $blog = Blog::findOrFail($id);
-
-    $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        'description' => 'required|string',
-        'full_content' => 'required|string',
-        'published_at' => 'nullable|date',
-    ]);
-
-    // Jika published_at tidak diisi, hapus dari $validated agar nilai lama tidak tertimpa null.
-    if (!$request->filled('published_at')) {
-        unset($validated['published_at']);
-    }
-
-    if ($request->hasFile('landscape_image')) {
-        if ($blog->landscape_image) {
-            Storage::disk('public')->delete($blog->landscape_image);
+        try {
+            $blog = Blog::findOrFail($id);
+    
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'landscape_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'portrait_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'description' => 'required|string',
+                'full_content' => 'required|string',
+                'category_id' => 'required|exists:categories,id',
+                'published_at' => 'nullable|date',
+            ]);
+    
+            if (!$request->filled('published_at')) {
+                unset($validated['published_at']);
+            }
+    
+            foreach (['landscape_image', 'portrait_image'] as $imageField) {
+                if ($request->hasFile($imageField)) {
+                    if ($blog->$imageField) {
+                        $this->deleteImage($blog->$imageField);
+                    }
+                    $validated[$imageField] = $request->file($imageField)->store('uploads/blog_images', 'public');
+                } else {
+                    unset($validated[$imageField]);
+                }
+            }
+    
+            $this->deleteUnusedContentImages($blog->full_content, $validated['full_content']);
+    
+            $blog->update($validated);
+    
+            return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil diperbarui!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-        $validated['landscape_image'] = $request->file('landscape_image')->store('blog_images', 'public');
     }
+    
 
-    if ($request->hasFile('portrait_image')) {
-        if ($blog->portrait_image) {
-            Storage::disk('public')->delete($blog->portrait_image);
-        }
-        $validated['portrait_image'] = $request->file('portrait_image')->store('blog_images', 'public');
-    }
+      // 🔴 Fungsi untuk menghapus gambar dari storage
+      private function deleteImage($imageUrl)
+      {
+          if ($imageUrl) {
+              $path = str_replace('storage/', '', $imageUrl);
+              $filePath = public_path('storage/' . $path);
+  
+              if (file_exists($filePath)) {
+                  unlink($filePath);
+              }
+          }
+      }
+  
+      // 🔴 Fungsi untuk menghapus gambar dalam full_content
+      private function deleteContentImages($fullContent)
+      {
+          preg_match_all('/<img[^>]+src="([^"]+)"/', $fullContent, $matches);
+  
+          foreach ($matches[1] as $imageUrl) {
+              $this->deleteImage($imageUrl);
+          }
+      }
+  
+      // 🔴 Fungsi untuk menghapus gambar lama yang tidak digunakan di full_content baru
+      private function deleteUnusedContentImages($oldContent, $newContent)
+      {
+          preg_match_all('/<img[^>]+src="([^"]+)"/', $oldContent, $oldImages);
+          preg_match_all('/<img[^>]+src="([^"]+)"/', $newContent, $newImages);
+  
+          $oldImages = $oldImages[1] ?? [];
+          $newImages = $newImages[1] ?? [];
+  
+          // Hapus hanya gambar lama yang tidak ada di full_content baru
+          foreach ($oldImages as $oldImage) {
+              if (!in_array($oldImage, $newImages)) {
+                  $this->deleteImage($oldImage);
+              }
+          }
+      }
+    
 
-    $blog->update($validated);
 
-    return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil diperbarui!');
-}
-
-
-    public function deleteBlog($id)
-    {
-        $blog = Blog::findOrFail($id);
-        if ($blog->image) {
-            Storage::disk('public')->delete($blog->image);
-        }
-        if ($blog->portrait_image) {
-            Storage::disk('public')->delete($blog->portrait_image);
-        }
-        $blog->delete();
-
-        return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil dihapus!');
-    }
+      public function deleteBlog($slug)
+      {
+          try {
+              $blog = Blog::where('slug', $slug)->firstOrFail();
+      
+              if ($blog->image) {
+                  Storage::disk('public')->delete($blog->image);
+              }
+              if ($blog->portrait_image) {
+                  Storage::disk('public')->delete($blog->portrait_image);
+              }
+      
+              $this->deleteContentImages($blog->full_content);
+              $blog->delete();
+      
+              return redirect()->route('admin.blogs.list')->with('success', 'Blog berhasil dihapus!');
+          } catch (\Exception $e) {
+              return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+          }
+      }
+      
 
     public function createUser()
 {
@@ -200,22 +259,26 @@ class AdminController extends Controller
 
 
 
-public function storeUser(Request $request)
-{
-    // dd($request->all());
-    $validated = $request->validate([
-        'username' => 'required|string|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:6',
-        'role_id' => 'required|exists:roles,id',
-    ]);
-
-    $validated['password'] = Hash::make($validated['password']);
-
-    User::create($validated);
-
-    return redirect()->route('admin.users')->with('success', 'User berhasil ditambahkan!');
-}
+    public function storeUser(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'username' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|min:6',
+                'role_id' => 'required|exists:roles,id',
+            ]);
+    
+            $validated['password'] = Hash::make($validated['password']);
+    
+            User::create($validated);
+    
+            return redirect()->route('admin.users')->with('success', 'User berhasil ditambahkan!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+    
 
 
     /**
@@ -231,7 +294,8 @@ public function storeUser(Request $request)
      * Memperbarui data user
      */
     public function updateUser(Request $request, $id)
-    {
+{
+    try {
         $user = User::findOrFail($id);
         
         $validated = $request->validate([
@@ -250,18 +314,27 @@ public function storeUser(Request $request)
         $user->update($validated);
 
         return redirect()->route('admin.users')->with('success', 'User berhasil diperbarui!');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
     }
+}
+
 
     /**
      * Menghapus user
      */
     public function deleteUser($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-
-        return redirect()->route('admin.users')->with('success', 'User berhasil dihapus!');
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+    
+            return redirect()->route('admin.users')->with('success', 'User berhasil dihapus!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
+    
 
 
     public function setting()
@@ -271,34 +344,38 @@ public function storeUser(Request $request)
     }
     
     public function updateSetting(Request $request)
-    {
-        $admin = Auth::user(); // Ambil user yang sedang login
-    
+{
+    try {
+        $admin = Auth::user();
+
         if (!$admin) {
             return redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu.');
         }
-    
+
         $validated = $request->validate([
             'username' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $admin->id,
             'password' => 'nullable|min:6',
         ]);
-    
+
         if ($request->filled('password')) {
             $validated['password'] = Hash::make($request->password);
         } else {
             unset($validated['password']);
         }
-    
-        // Perbaiki update dengan menggunakan find()
+
         $admin = User::find($admin->id);
         
         if ($admin) {
             $admin->update($validated);
             return redirect()->route('admin.setting')->with('success', 'Pengaturan berhasil diperbarui!');
         }
-    
-        return redirect()->route('admin.setting')->with('error', 'Gagal memperbarui pengaturan.');
+
+        return redirect()->back()->with('error', 'Gagal memperbarui pengaturan.');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
     }
+}
+
     
 }

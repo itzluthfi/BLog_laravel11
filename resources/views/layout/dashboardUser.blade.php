@@ -96,6 +96,42 @@
 
         <!-- Konten Utama -->
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+             <!-- Pesan Notifikasi -->
+             @if (session('success'))
+             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                 <strong class="font-bold">Sukses! </strong>
+                 <span class="block sm:inline">{{ session('success') }}</span>
+                 <button class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove();">
+                     <i class="ri-close-line"></i>
+                 </button>
+             </div>
+             @endif
+ 
+             @if (session('error'))
+             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                 <strong class="font-bold">Error! </strong>
+                 <span class="block sm:inline">{{ session('error') }}</span>
+                 <button class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove();">
+                     <i class="ri-close-line"></i>
+                 </button>
+             </div>
+             @endif
+ 
+             <!-- Menampilkan Error Validasi -->
+             @if ($errors->any())
+             <div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4">
+                 <strong class="font-bold">Terjadi Kesalahan:</strong>
+                 <ul class="mt-2 list-disc pl-5">
+                     @foreach ($errors->all() as $error)
+                         <li>{{ $error }}</li>
+                     @endforeach
+                 </ul>
+                 <button class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove();">
+                     <i class="ri-close-line"></i>
+                 </button>
+             </div>
+             @endif
+             
             @yield('content')
         </main>
     </div>

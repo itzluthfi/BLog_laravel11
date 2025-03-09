@@ -31,7 +31,7 @@
         
         <div class="mb-4">
             <label class="block text-gray-700 font-semibold mb-2">Gambar Potrait</label>
-            <input type="file" name="portrait_image" class="w-full border rounded-lg p-2" required>
+            <input type="file" name="portrait_image" class="w-full border rounded-lg p-2" >
         </div>
 
         <div class="mb-4">

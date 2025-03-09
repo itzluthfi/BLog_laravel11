@@ -6,12 +6,6 @@
     <div class="bg-white p-6 rounded-lg shadow-md">
         <h2 class="text-2xl font-bold text-gray-800 mb-4"> Artikel Saya</h2>
 
-        {{-- Notifikasi sukses --}}
-        @if (session('success'))
-            <div class="bg-green-500 text-white p-3 rounded-lg mb-4 flex items-center">
-                <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
-            </div>
-        @endif
 
         {{-- Input pencarian --}}
         <div class="mb-4">

@@ -15,11 +15,7 @@
         </a>
     </div>
 
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4 rounded">
-            {{ session('success') }}
-        </div>
-    @endif
+    
 
     <table class="w-full border-collapse border border-gray-200">
         <thead>
@@ -37,8 +33,8 @@
                     <td class="p-3 border border-gray-200">{{ $category->name }}</td>
                     <td class="p-3 border border-gray-200">{{ $category->slug }}</td>
                     <td class="p-3 border border-gray-200 text-center">
-                        <a href="{{ route('admin.categories.edit', $category) }}" class="text-blue-500 hover:underline"><i class="ri-edit-line"></i> Edit</a>
-                        <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Hapus kategori ini?')">
+                        <a href="{{ route('admin.categories.edit', $category->slug) }}" class="text-blue-500 hover:underline"><i class="ri-edit-line"></i> Edit</a>
+                        <form action="{{ route('admin.categories.destroy', $category->slug) }}" method="POST" class="inline-block ml-2" onsubmit="return confirm('Hapus kategori ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="text-red-500 hover:underline"><i class="ri-delete-bin-line"></i> Hapus</button>

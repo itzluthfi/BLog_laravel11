@@ -4,16 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Database\QueryException;
+use Exception;
 
 class CategoryController extends Controller
 {
     // Menampilkan semua kategori
     public function index()
     {
-        $categories = Category::latest()->get();
-        return view('admin.categories.list', compact('categories'));
+        try {
+            $categories = Category::latest()->get();
+            return view('admin.categories.list', compact('categories'));
+        } catch (Exception $e) {
+            return back()->with('error', 'Gagal memuat kategori: ' . $e->getMessage());
+        }
     }
 
     // Menampilkan form tambah kategori
@@ -29,46 +34,65 @@ class CategoryController extends Controller
             'name' => 'required|unique:categories,name',
         ]);
 
-        Category::create([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-        ]);
+        try {
+            Category::create([
+                'name' => $request->name,
+                'slug' => Str::slug($request->name),
+            ]);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil ditambahkan!');
+            return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil ditambahkan!');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal menyimpan kategori: ' . $e->getMessage())->withInput();
+        } catch (Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        }
     }
 
-    // Menampilkan detail kategori
-    // public function show($slug)
-    // {
-    //     $category = Category::where('slug', $slug)->firstOrFail();
-    //     return view('admin.categories.show', compact('category'));
-    // }
-
-    // Menampilkan form edit kategori
-    public function edit(Category $category)
+    // Menampilkan form edit kategori berdasarkan slug
+    public function edit($slug)
     {
-        return view('admin.categories.edit', compact('category'));
+        try {
+            $category = Category::where('slug', $slug)->firstOrFail();
+            return view('admin.categories.edit', compact('category'));
+        } catch (Exception $e) {
+            return redirect()->route('admin.categories.index')->with('error', 'Kategori tidak ditemukan.');
+        }
     }
 
-    // Menyimpan perubahan kategori
-    public function update(Request $request, Category $category)
+    // Menyimpan perubahan kategori berdasarkan slug
+    public function update(Request $request, $slug)
     {
         $request->validate([
-            'name' => 'required|unique:categories,name,' . $category->id,
+            'name' => 'required|unique:categories,name,' . $slug . ',slug',
         ]);
 
-        $category->update([
-            'name' => $request->name,
-            'slug' => Str::slug($request->name),
-        ]);
+        try {
+            $category = Category::where('slug', $slug)->firstOrFail();
+            $category->update([
+                'name' => $request->name,
+                'slug' => Str::slug($request->name),
+            ]);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diperbarui!');
+            return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diperbarui!');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal memperbarui kategori: ' . $e->getMessage())->withInput();
+        } catch (Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        }
     }
 
-    // Menghapus kategori
-    public function destroy(Category $category)
+    // Menghapus kategori berdasarkan slug
+    public function destroy($slug)
     {
-        $category->delete();
-        return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil dihapus!');
+        try {
+            $category = Category::where('slug', $slug)->firstOrFail();
+            $category->delete();
+
+            return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil dihapus!');
+        } catch (QueryException $e) {
+            return back()->with('error', 'Gagal menghapus kategori: ' . $e->getMessage());
+        } catch (Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }

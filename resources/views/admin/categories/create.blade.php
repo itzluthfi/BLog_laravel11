@@ -1,4 +1,4 @@
-@extends('layout.DashboardAdmin')
+@extends('layout.dashboardAdmin')
 
 @section('title', 'Tambah Kategori')
 

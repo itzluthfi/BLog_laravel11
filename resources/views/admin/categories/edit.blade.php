@@ -1,4 +1,4 @@
-@extends('layout.DashboardAdmin')
+@extends('layout.dashboardAdmin')
 
 @section('title', 'Edit Kategori')
 
@@ -6,7 +6,7 @@
 <div class="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
     <h2 class="text-xl font-semibold text-gray-700 mb-4">Edit Kategori</h2>
 
-    <form action="{{ route('categories.update', $category) }}" method="POST">
+    <form action="{{ route('admin.categories.update', $category->slug) }}" method="POST">
         @csrf
         @method('PUT')
         
@@ -19,7 +19,7 @@
         </div>
 
         <div class="flex justify-end">
-            <a href="{{ route('categories.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2">Batal</a>
+            <a href="{{ route('admin.categories.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded-lg mr-2">Batal</a>
             <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Simpan</button>
         </div>
     </form>
