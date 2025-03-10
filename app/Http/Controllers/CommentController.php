@@ -29,6 +29,7 @@ class CommentController extends Controller
          */
         public function store(Request $request, Blog $blog)
         {
+            // Validasi dan simpan komentar
             $validated = $request->validate([
                 'content' => 'required|string|max:500',
                 'parent_id' => 'nullable|exists:comments,id',
@@ -39,7 +40,7 @@ class CommentController extends Controller
         
             $comment = Comment::create($validated);
         
-            // Pastikan respons JSON dikirim jika permintaan adalah AJAX
+            // Respons untuk AJAX
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
@@ -47,7 +48,8 @@ class CommentController extends Controller
                     'user_id' => $comment->user_id,
                     'username' => Auth::user()->username,
                     'content' => $comment->content,
-                    'created_at' => $comment->created_at->diffForHumans()
+                    'created_at' => $comment->created_at->diffForHumans(),
+                    'parent_id' => $comment->parent_id // Tambahkan jika diperlukan
                 ]);
             }
         
