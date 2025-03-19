@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Blog;
+use App\Models\Category;
 
 class AuthController extends Controller
 {
@@ -81,4 +83,35 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('home')->with('success', 'Logout berhasil!');
     }
+
+
+
+    public function beranda(Request $request) {
+        $categories = Category::all();
+    
+        // Tangkap query pencarian
+        $query = Blog::with(['category', 'author', 'likes', 'favorites']);
+        
+        if ($request->has('search') && $request->search != '') {
+            $query->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('slug', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('author', function ($q) use ($request) {
+                      $q->where('username', 'like', '%' . $request->search . '%')
+                        ->orWhere('email', 'like', '%' . $request->search . '%');
+                  });
+        }
+    
+        if ($request->has('category') && $request->category != '') {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('name', $request->category);
+            });
+        }
+    
+        $blogs = $query->paginate(5);
+    
+        return view('home', compact('blogs', 'categories'));
+    }
+    
+    
+    
 }

@@ -22,9 +22,10 @@ Route::middleware('guest')->group(function () {
 // ============================
 // Halaman Utama dan Informasi Umum
 // ============================
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [AuthController::class,'beranda'])->name('home');
+
+
+
 
 Route::get('/about', function () {
     return view('about', [
@@ -38,6 +39,9 @@ Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
+
+
+
 
 
 // ============================
@@ -58,7 +62,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/disukai', [UserController::class, 'likedArticles'])->name('artikelDisukai');
         Route::get('/setting', [UserController::class, 'setting'])->name('setting');
         Route::put('/setting', [UserController::class, 'updateSetting'])->name('setting.update');
+        Route::post('/blog/{blog}/favorite', [BlogController::class, 'favorite'])->name('blog.favorite');
+        Route::post('/blog/{blog}/like', [BlogController::class, 'like'])->name('blog.like');
     });
+
 
     // Logout User
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -66,7 +73,7 @@ Route::middleware('auth')->group(function () {
     // ============================
     // Manajemen Favorit
     // ============================
-    Route::post('/blog/{id}/favorite', [BlogController::class, 'favorite'])->name('blog.favorite');
+    // Route::post('/blog/{id}/favorite', [BlogController::class, 'favorite'])->name('blog.favorite');
 
     // ============================
     // Manajemen Komentar

@@ -217,4 +217,40 @@ class BlogController extends Controller
             return back()->with('error', 'Terjadi kesalahan saat menghapus blog.'. $e->getMessage());
         }
     }
+
+
+    public function like(Blog $blog)
+    {
+        $user = Auth::user();
+    
+        if (!$user) {
+            return response()->json(['error' => 'You must be logged in to perform this action.'], 401);
+        }
+    
+        // Toggle like (attach jika belum like, detach jika sudah like)
+        $user->likedBlogs()->toggle($blog);
+    
+        return response()->json([
+            'likes' => $blog->likes()->count()
+        ]);
+    }
+    
+    
+    public function favorite(Blog $blog)
+    {
+        $user = Auth::user();
+    
+        if (!$user) {
+            return response()->json(['error' => 'You must be logged in to perform this action.'], 401);
+        }
+    
+        // Toggle likfavoritee (attach jika belum favorite, detach jika sudah favorite)
+        $user->favoriteBlogs()->toggle($blog);
+    
+        return response()->json([
+            'favorites' => $blog->favorites()->count()
+        ]);
+    }
+    
+    
 }

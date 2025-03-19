@@ -1,7 +1,7 @@
 @extends('layout.app') 
 
 
-@section('title_page', 'Contact Page')
+@section('title_page', 'Beranda')
 
 @section('content')
             
@@ -9,32 +9,24 @@
             <main class="flex-grow pt-24 pb-16">
                 <div class="container mx-auto px-4">
                     <!-- Hero Section -->
-                    <div class="hero bg-base-200 rounded-box mb-12" data-aos="fade-up">
+                    <div class="hero bg-gray-300 rounded-box mb-12" data-aos="fade-up">
                         <div class="hero-content flex-col lg:flex-row-reverse py-12">
                             <img src="https://picsum.photos/id/325/800/600" class="max-w-sm rounded-lg shadow-2xl" alt="Blog Hero" />
                             <div>
                                 <h1 class="text-5xl font-bold">Explore Our Blog</h1>
                                 <p class="py-6">Discover insightful articles, tutorials, and stories from our community of writers. Stay updated with the latest trends and learn something new every day.</p>
-                                <div class="join">
-                                    <input class="input input-bordered join-item" placeholder="Search articles..."/>
-                                    <button class="btn btn-primary join-item">Search</button>
-                                </div>
+                               <!-- Form Pencarian -->
+                                <form action="{{ route('home') }}" method="GET" class="join">
+                                    <input type="text" name="search" value="{{ request('search') }}" class="input input-bordered join-item" placeholder="Search articles..." />
+                                    <button type="submit" class="btn btn-primary join-item">Search</button>
+                                </form>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Categories -->
-                    <div class="mb-8" data-aos="fade-up" data-aos-delay="100">
-                        <h2 class="text-2xl font-bold mb-4">Categories</h2>
-                        <div class="flex flex-wrap gap-2">
-                            <button class="btn btn-sm btn-primary">All</button>
-                            <button class="btn btn-sm btn-outline">Technology</button>
-                            <button class="btn btn-sm btn-outline">Lifestyle</button>
-                            <button class="btn btn-sm btn-outline">Travel</button>
-                            <button class="btn btn-sm btn-outline">Food</button>
-                            <button class="btn btn-sm btn-outline">Health</button>
-                        </div>
-                    </div>
+               
+
+
                     
                     <!-- Featured Posts -->
                     <div class="mb-12" data-aos="fade-up" data-aos-delay="200">
@@ -91,167 +83,98 @@
                         </div>
                     </div>
                     
+                 <!-- Categories Dropdown -->
+                <div class="mb-8" data-aos="fade-up" data-aos-delay="100">
+                    <h2 class="text-2xl font-bold mb-4">Categories</h2>
+                    <div x-data="{ selectedCategory: '{{ request('category') ?? '' }}' }">
+                        <select x-model="selectedCategory" @change="window.location.href = selectedCategory ? '{{ route('home') }}?category=' + selectedCategory : '{{ route('home') }}'"
+                            class="select select-bordered w-full max-w-xs">
+                            <option value="" :selected="selectedCategory === ''">All</option>
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->name }}" :selected="selectedCategory === '{{ $category->name }}'">
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
                     <!-- Latest Posts -->
                     <div class="mb-12" data-aos="fade-up" data-aos-delay="300">
                         <h2 class="text-2xl font-bold mb-6">Latest Posts</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Post 1 -->
+
+                        @if ($blogs->isEmpty())
+                            <p class="text-center text-gray-500">Tidak ada postingan tersedia.</p>
+                        @else
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach ($blogs as $blog)
                             <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="100">
-                                <figure><img src="https://picsum.photos/id/237/600/400" alt="Blog Post" /></figure>
+                                <figure class="h-56 w-full overflow-hidden">
+                                    <img src="{{ asset(e($blog->landscape_image)) }}" 
+                                         alt="Blog-{{ $blog->title }}" 
+                                         class="w-full h-full object-cover" />
+                                </figure>
+                                
                                 <div class="card-body">
-                                    <div class="badge badge-secondary mb-2">Technology</div>
-                                    <h2 class="card-title">The Rise of No-Code Platforms</h2>
-                                    <p>How no-code platforms are democratizing software development and enabling non-technical users to build applications.</p>
-                                    <div class="flex items-center mt-4">
+                                    <div class="badge badge-primary mb-2">{{$blog->category->name}}</div>
+                              
+                                    <a href="{{ route('profile.blog.show', $blog) }}" class=" hover:underline">
+
+                                    <h2 class="card-title">{{$blog->title}}</h2>
+                                </a>
+                                    <p>{{$blog->description}}</p>
+                                    <div class="flex items-center mt-2">
                                         <div class="avatar">
                                             <div class="w-10 rounded-full">
-                                                <img src="https://api.dicebear.com/6.x/initials/svg?seed=John%20Doe" alt="Author" />
+                                                <img src="{{ asset(e($blog->author->profile_image)) }}" alt="Author-{{ $blog->author->username }}" />
                                             </div>
                                         </div>
                                         <div class="ml-3">
-                                            <p class="text-sm font-medium">John Doe</p>
-                                            <p class="text-xs opacity-70">May 15, 2023</p>
+                                            <p class="text-sm font-medium">{{$blog->author->username}}</p>
+                                            <p class="text-xs opacity-70">{{$blog->created_at->format('d M Y')}}</p>
+                                            <p class="text-xs opacity-70 mt-1 italic">{{$blog->updated_at->diffForHumans()}}</p>
                                         </div>
                                     </div>
-                                    <div class="card-actions justify-end mt-4">
-                                        <button class="btn btn-primary btn-sm">Read More</button>
+
+                                    <div class="flex items-center justify-between mt-3">
+                                        <a href="javascript:void(0)" class="flex items-center space-x-2 like-btn" 
+                                        data-id="{{ $blog->id }}" 
+                                        data-route="{{ route('profile.blog.like', $blog) }}">
+                                        <i class="fa-solid fa-heart 
+                                            {{ auth()->check() && $blog->isLikedBy(auth()->user()) ? 'text-red-500' : 'text-gray-400' }} 
+                                            {{ auth()->check() ? '' : 'cursor-not-allowed opacity-50' }}" 
+                                            title="{{ auth()->check() ? '' : 'Please login to like this post.' }}">
+                                        </i>
+                                         <span class="like-count">{{ $blog->likes()->count() }}</span>    
+                                     </a>
+                                     
+                                     <button class="flex items-center space-x-2 favorite-btn" 
+                                             data-id="{{ $blog->id }}" 
+                                             data-route="{{ route('profile.blog.favorite', $blog) }}">
+                                            <i class="fa-solid fa-star {{ auth()->check() && $blog->isFavoritedBy(auth()->user()) ? 'text-yellow-500' : 'text-gray-400' }}"></i>
+                                         <span class="favorite-count">{{ $blog->favorites()->count() }}</span>
+                                     </button>
+                                     
+                                    </div>
+                                    
+                                    <div class="card-actions justify-end ">
+                                        <a href="{{ route('profile.blog.show', $blog) }}" class="btn btn-primary btn-sm">Read More</a>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <!-- Post 2 -->
-                            <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="200">
-                                <figure><img src="https://picsum.photos/id/1005/600/400" alt="Blog Post" /></figure>
-                                <div class="card-body">
-                                    <div class="badge badge-accent mb-2">Lifestyle</div>
-                                    <h2 class="card-title">Mindfulness in the Digital Age</h2>
-                                    <p>Practical strategies for maintaining mindfulness and mental well-being in our increasingly digital world.</p>
-                                    <div class="flex items-center mt-4">
-                                        <div class="avatar">
-                                            <div class="w-10 rounded-full">
-                                                <img src="https://api.dicebear.com/6.x/initials/svg?seed=Jane%20Smith" alt="Author" />
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium">Jane Smith</p>
-                                            <p class="text-xs opacity-70">May 10, 2023</p>
-                                        </div>
-                                    </div>
-                                    <div class="card-actions justify-end mt-4">
-                                        <button class="btn btn-primary btn-sm">Read More</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Post 3 -->
-                            <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="300">
-                                <figure><img src="https://picsum.photos/id/1006/600/400" alt="Blog Post" /></figure>
-                                <div class="card-body">
-                                    <div class="badge badge-primary mb-2">Travel</div>
-                                    <h2 class="card-title">Hidden Gems of Southeast Asia</h2>
-                                    <p>Discover lesser-known but breathtaking destinations across Southeast Asia that should be on your travel bucket list.</p>
-                                    <div class="flex items-center mt-4">
-                                        <div class="avatar">
-                                            <div class="w-10 rounded-full">
-                                                <img src="https://api.dicebear.com/6.x/initials/svg?seed=Mark%20Johnson" alt="Author" />
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium">Mark Johnson</p>
-                                            <p class="text-xs opacity-70">May 5, 2023</p>
-                                        </div>
-                                    </div>
-                                    <div class="card-actions justify-end mt-4">
-                                        <button class="btn btn-primary btn-sm">Read More</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Post 4 -->
-                            <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="400">
-                                <figure><img src="https://picsum.photos/id/102/600/400" alt="Blog Post" /></figure>
-                                <div class="card-body">
-                                    <div class="badge badge-secondary mb-2">Technology</div>
-                                    <h2 class="card-title">Web3 and the Future of the Internet</h2>
-                                    <p>An exploration of Web3 technologies and how they might reshape our online experiences in the coming years.</p>
-                                    <div class="flex items-center mt-4">
-                                        <div class="avatar">
-                                            <div class="w-10 rounded-full">
-                                                <img src="https://api.dicebear.com/6.x/initials/svg?seed=Sarah%20Lee" alt="Author" />
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium">Sarah Lee</p>
-                                            <p class="text-xs opacity-70">April 28, 2023</p>
-                                        </div>
-                                    </div>
-                                    <div class="card-actions justify-end mt-4">
-                                        <button class="btn btn-primary btn-sm">Read More</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Post 5 -->
-                            <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="500">
-                                <figure><img src="https://picsum.photos/id/1025/600/400" alt="Blog Post" /></figure>
-                                <div class="card-body">
-                                    <div class="badge badge-warning mb-2">Food</div>
-                                    <h2 class="card-title">Plant-Based Cooking for Beginners</h2>
-                                    <p>Simple and delicious plant-based recipes that anyone can make, regardless of cooking experience.</p>
-                                    <div class="flex items-center mt-4">
-                                        <div class="avatar">
-                                            <div class="w-10 rounded-full">
-                                                <img src="https://api.dicebear.com/6.x/initials/svg?seed=David%20Chen" alt="Author" />
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium">David Chen</p>
-                                            <p class="text-xs opacity-70">April 22, 2023</p>
-                                        </div>
-                                    </div>
-                                    <div class="card-actions justify-end mt-4">
-                                        <button class="btn btn-primary btn-sm">Read More</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Post 6 -->
-                            <div class="card bg-base-100 shadow-xl" data-aos="fade-up" data-aos-delay="600">
-                                <figure><img src="https://picsum.photos/id/1035/600/400" alt="Blog Post" /></figure>
-                                <div class="card-body">
-                                    <div class="badge badge-error mb-2">Health</div>
-                                    <h2 class="card-title">The Science of Better Sleep</h2>
-                                    <p>Evidence-based strategies to improve your sleep quality and wake up feeling more refreshed and energized.</p>
-                                    <div class="flex items-center mt-4">
-                                        <div class="avatar">
-                                            <div class="w-10 rounded-full">
-                                                <img src="https://api.dicebear.com/6.x/initials/svg?seed=Emily%20Wilson" alt="Author" />
-                                            </div>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium">Emily Wilson</p>
-                                            <p class="text-xs opacity-70">April 18, 2023</p>
-                                        </div>
-                                    </div>
-                                    <div class="card-actions justify-end mt-4">
-                                        <button class="btn btn-primary btn-sm">Read More</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                            @endforeach
                         
-                        <!-- Pagination -->
-                        <div class="flex justify-center mt-10">
-                            <div class="join">
-                                <button class="join-item btn">«</button>
-                                <button class="join-item btn btn-active">1</button>
-                                <button class="join-item btn">2</button>
-                                <button class="join-item btn">3</button>
-                                <button class="join-item btn">4</button>
-                                <button class="join-item btn">»</button>
-                            </div>
                         </div>
+                        @endif  
                     </div>
+        
+                    <!-- Pagination -->
+                    @if ($blogs->hasPages())
+                    <div class="flex justify-center my-10" data-aos="fade-up">
+                        {{ $blogs->links('pagination::tailwind') }}
+                    </div>
+                    @endif
+      
                     
                     <!-- Newsletter -->
                     <div class="card bg-primary text-primary-content shadow-xl" data-aos="fade-up">
@@ -269,3 +192,76 @@
             
           
 @endsection
+
+@push('scripts')
+<script>
+    console.log("Script loaded successfully!");
+    document.addEventListener("DOMContentLoaded", function () {
+    // Like Button
+    document.querySelectorAll(".like-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let route = this.dataset.route;
+            fetch(route, { 
+                method: "POST",
+                headers: { 
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    "Accept": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || "You need to login to perform this action.");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Response:", data);
+                let icon = this.querySelector(".fa-heart");
+                if (icon) {
+                    icon.classList.toggle("text-red-500");
+                    icon.classList.toggle("text-gray-400");
+                }
+                let likeCount = this.querySelector(".like-count");
+                if (likeCount) {
+                    likeCount.textContent = data.likes;
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+        });
+    });
+
+    // Favorite Button
+    document.querySelectorAll(".favorite-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let route = this.dataset.route;
+            fetch(route, { 
+                method: "POST", 
+                headers: { 
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    "Accept": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Response:", data);
+                let icon = this.querySelector(".fa-star");
+                if (icon) {
+                    icon.classList.toggle("text-yellow-500");
+                    icon.classList.toggle("text-gray-400");
+                }
+                let favoriteCount = this.querySelector(".favorite-count");
+                if (favoriteCount) {
+                    favoriteCount.textContent = data.favorites;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    });
+});
+
+    </script>
+@endpush    

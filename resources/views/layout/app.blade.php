@@ -199,7 +199,7 @@
 
     <script>
         AOS.init({
-            duration: 700,
+            duration: 500,
             once: true,
         });
         
