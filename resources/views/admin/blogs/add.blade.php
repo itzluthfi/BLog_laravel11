@@ -50,7 +50,7 @@
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
@@ -112,4 +112,4 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 });
 </script>
-@endsection
+@endpush

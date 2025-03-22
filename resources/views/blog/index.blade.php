@@ -32,3 +32,75 @@
 
 
 @endsection
+@push('scripts')
+<script>
+    console.log("Script loaded successfully!");
+    document.addEventListener("DOMContentLoaded", function () {
+    // Like Button
+    document.querySelectorAll(".like-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let route = this.dataset.route;
+            fetch(route, { 
+                method: "POST",
+                headers: { 
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    "Accept": "application/json"
+                }
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    return response.json().then(data => {
+                        throw new Error(data.error || "You need to login to perform this action.");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log("Response:", data);
+                let icon = this.querySelector(".fa-heart");
+                if (icon) {
+                    icon.classList.toggle("text-red-500");
+                    icon.classList.toggle("text-gray-400");
+                }
+                let likeCount = this.querySelector(".like-count");
+                if (likeCount) {
+                    likeCount.textContent = data.likes;
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+        });
+    });
+
+    // Favorite Button
+    document.querySelectorAll(".favorite-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            let route = this.dataset.route;
+            fetch(route, { 
+                method: "POST", 
+                headers: { 
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    "Accept": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Response:", data);
+                let icon = this.querySelector(".fa-star");
+                if (icon) {
+                    icon.classList.toggle("text-yellow-500");
+                    icon.classList.toggle("text-gray-400");
+                }
+                let favoriteCount = this.querySelector(".favorite-count");
+                if (favoriteCount) {
+                    favoriteCount.textContent = data.favorites;
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+    });
+});
+
+    </script>
+@endpush    

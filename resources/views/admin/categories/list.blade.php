@@ -46,6 +46,9 @@
     </table>
 </div>
 
+@endsection
+@push('scripts')
+    
 <!-- Script Pencarian -->
 <script>
     document.getElementById('searchInput').addEventListener('keyup', function() {
@@ -58,4 +61,5 @@
         });
     });
 </script>
-@endsection
+@endpush
+

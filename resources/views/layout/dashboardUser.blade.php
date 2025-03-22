@@ -306,7 +306,6 @@
         </div>
     </div>
 
-    @yield('scripts')
     
     <script>
         // Close alerts after 5 seconds
@@ -318,8 +317,11 @@
                     alert.style.transition = 'opacity 1s';
                     setTimeout(() => alert.remove(), 1000);
                 });
-            }, 5000);
+            }, 3000);
         });
     </script>
+
+@stack('scripts')
+
 </body>
 </html>
