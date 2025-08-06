@@ -86,32 +86,31 @@ class AuthController extends Controller
 
 
 
-    public function beranda(Request $request) {
-        $categories = Category::all();
-    
+    public function beranda(Request $request)
+    {
+        $categories = Category::withCount('blogs')->get();
+
         // Tangkap query pencarian
         $query = Blog::with(['category', 'author', 'likes', 'favorites']);
-        
+        $total_blogs = Blog::count();
+
         if ($request->has('search') && $request->search != '') {
             $query->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('slug', 'like', '%' . $request->search . '%')
-                  ->orWhereHas('author', function ($q) use ($request) {
-                      $q->where('username', 'like', '%' . $request->search . '%')
+                ->orWhere('slug', 'like', '%' . $request->search . '%')
+                ->orWhereHas('author', function ($q) use ($request) {
+                    $q->where('username', 'like', '%' . $request->search . '%')
                         ->orWhere('email', 'like', '%' . $request->search . '%');
-                  });
+                });
         }
-    
+
         if ($request->has('category') && $request->category != '') {
             $query->whereHas('category', function ($q) use ($request) {
                 $q->where('name', $request->category);
             });
         }
-    
+
         $blogs = $query->paginate(5);
-    
-        return view('home', compact('blogs', 'categories'));
+
+        return view('home', compact('blogs', 'categories', 'total_blogs'));
     }
-    
-    
-    
 }

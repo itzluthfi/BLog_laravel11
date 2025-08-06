@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\User;
 use App\Models\Blog;
+use App\Models\Comment;
 
 class UserController extends Controller
 {
@@ -98,6 +99,16 @@ class UserController extends Controller
     //       $query->where('user_id', $user->id);
     //   })->latest()->get();
       return view('profile.artikelDisukai', compact('user'));
+  }
+
+  public function myComments()
+  {
+      $user = Auth::user();
+      $mycomments = Comment::with('blog', 'user')
+      ->where('user_id', Auth::id())
+      ->latest()
+      ->get();
+      return view('profile.komentarSaya', compact('mycomments','user'));
   }
 
   public function setting()

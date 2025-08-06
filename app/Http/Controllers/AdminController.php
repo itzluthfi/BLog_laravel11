@@ -377,5 +377,15 @@ class AdminController extends Controller
     }
 }
 
+public function comments()
+  {
+      $user = Auth::user();
+      $comments = Comment::with('blog', 'user')
+      
+      ->latest()
+      ->get();
+      return view('admin.comments.list', compact('comments','user'));
+  }
+
     
 }

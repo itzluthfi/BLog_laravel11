@@ -70,7 +70,7 @@
                     <div class="flex-none hidden lg:block">
                         <ul class="menu menu-horizontal gap-2">
                             <li><a href="/" class="nav-link text-base font-medium hover:text-primary">Beranda</a></li>
-                            <li><a href="{{ route('blog.index') }}" class="nav-link text-base font-medium hover:text-primary">Blog</a></li>
+                            <li><a href="{{ route('blog.index') }}" class="nav-link text-base font-medium hover:text-primary">Blogs</a></li>
                             <li><a href="/about" class="nav-link text-base font-medium hover:text-primary">About</a></li>
                             <li><a href="/contact" class="nav-link text-base font-medium hover:text-primary">Contact</a></li>
                             
@@ -132,7 +132,7 @@
             <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded">
                 <div class="grid grid-flow-col gap-4">
                     <a href="/" class="link link-hover">Home</a>
-                    <a href="{{ route('blog.index') }}" class="link link-hover">Blog</a>
+                    <a href="{{ route('blog.index') }}" class="link link-hover">Blogs</a>
                     <a href="/about" class="link link-hover">About</a>
                     <a href="/contact" class="link link-hover">Contact</a>
                 </div> 

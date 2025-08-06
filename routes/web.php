@@ -7,6 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CommentController;
+use App\Models\User;
 
 // ============================
 // Public Routes (Hanya untuk Guest)
@@ -81,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('comments')->name('comments.')->group(function () {
         Route::post('/{blog}', [CommentController::class, 'store'])->name('store');
         Route::get('/{comment}/edit', [CommentController::class, 'edit'])->name('edit');
+        Route::get('/mycomments', [UserController::class, 'myComments'])->name('index');
         Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
         Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
     });
@@ -102,6 +104,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
     Route::get('/users/add', [AdminController::class, 'createUser'])->name('users.add');
     Route::post('/user/store', [AdminController::class, 'storeUser'])->name('users.store');
+
+    // ============================
+    // Manajemen Komentar
+    // ============================
+    Route::prefix('comments')->name('comments.')->group(function () {
+        Route::post('/{blog}', [CommentController::class, 'store'])->name('store');
+        Route::get('/{comment}/edit', [CommentController::class, 'edit'])->name('edit');
+        Route::get('/index', [AdminController::class, 'comments'])->name('index');
+        Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
+        Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
+    });
 
     // ============================
     // Pengaturan Admin

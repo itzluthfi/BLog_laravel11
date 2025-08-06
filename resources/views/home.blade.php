@@ -89,10 +89,10 @@
                     <div x-data="{ selectedCategory: '{{ request('category') ?? '' }}' }">
                         <select x-model="selectedCategory" @change="window.location.href = selectedCategory ? '{{ route('home') }}?category=' + selectedCategory : '{{ route('home') }}'"
                             class="select select-bordered w-full max-w-xs">
-                            <option value="" :selected="selectedCategory === ''">All</option>
+                            <option value="" :selected="selectedCategory === ''">All({{$total_blogs}})</option>
                             @foreach ($categories as $category)
                                 <option value="{{ $category->name }}" :selected="selectedCategory === '{{ $category->name }}'">
-                                    {{ $category->name }}
+                                    {{ $category->name }} ({{ $category->blogs_count }})
                                 </option>
                             @endforeach
                         </select>

@@ -414,7 +414,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="menu-item flex items-center p-3">
+                            <a href="{{ route('admin.comments.index') }}" class="menu-item flex items-center p-3">
                                 <i class="ri-chat-3-line text-lg mr-3"></i>
                                 Comments
                                 <span class="ml-auto bg-error/20 text-error text-xs px-2 py-1 rounded-full">12</span>
@@ -430,7 +430,7 @@
                                 Manage Users
                             </a>
                         </li>
-                        <li>
+                        {{-- <li>
                             <a href="#" class="menu-item flex items-center p-3">
                                 <i class="ri-shield-user-line text-lg mr-3"></i>
                                 Roles & Permissions
@@ -457,7 +457,7 @@
                                 <i class="ri-file-chart-line text-lg mr-3"></i>
                                 Content Performance
                             </a>
-                        </li>
+                        </li> --}}
                         
                         <li class="menu-title mt-6">
                             <span class="font-semibold uppercase text-xs tracking-wider text-gray-500 dark:text-gray-400">System</span>
@@ -465,7 +465,7 @@
                         <li class="mt-2">
                             <a href="{{ route('admin.setting') }}" class="menu-item flex items-center p-3 {{ request()->routeIs('admin.setting') ? 'active' : '' }}">
                                 <i class="ri-settings-3-line text-lg mr-3"></i>
-                                Settings
+                                Setting 
                             </a>
                         </li>
                         <li>
@@ -561,73 +561,6 @@
     </script>
     @stack('scripts')
 </body>
-</html><span class="font-semibold uppercase text-xs tracking-wider text-gray-500 dark:text-gray-400">User Management</span>
-                        </li>
-                        <li class="mt-2">
-                            <a href="{{ route('admin.users') }}" class="menu-item flex items-center p-3 {{ request()->routeIs('admin.users') ? 'active' : '' }}">
-                                <i class="ri-user-line text-lg mr-3"></i>
-                                Manage Users
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="menu-item flex items-center p-3">
-                                <i class="ri-shield-user-line text-lg mr-3"></i>
-                                Roles & Permissions
-                            </a>
-                        </li>
-                        
-                        <li class="menu-title mt-6">
-                            <span class="font-semibold uppercase text-xs tracking-wider text-gray-500 dark:text-gray-400">Analytics</span>
-                        </li>
-                        <li class="mt-2">
-                            <a href="#" class="menu-item flex items-center p-3">
-                                <i class="ri-line-chart-line text-lg mr-3"></i>
-                                Traffic Overview
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="menu-item flex items-center p-3">
-                                <i class="ri-user-heart-line text-lg mr-3"></i>
-                                User Engagement
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="menu-item flex items-center p-3">
-                                <i class="ri-file-chart-line text-lg mr-3"></i>
-                                Content Performance
-                            </a>
-                        </li>
-                        
-                        <li class="menu-title mt-6">
-                            <span class="font-semibold uppercase text-xs tracking-wider text-gray-500 dark:text-gray-400">System</span>
-                        </li>
-                        <li class="mt-2">
-                            <a href="{{ route('admin.setting') }}" class="menu-item flex items-center p-3 {{ request()->routeIs('admin.setting') ? 'active' : '' }}">
-                                <i class="ri-settings-3-line text-lg mr-3"></i>
-                                Settings
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="menu-item flex items-center p-3">
-                                <i class="ri-database-2-line text-lg mr-3"></i>
-                                System Status
-                                <span class="ml-auto bg-success/20 text-success text-xs px-2 py-1 rounded-full">Healthy</span>
-                            </a>
-                        </li>
-                        <li class="mt-4">
-                            <form action="{{route('logout')}}" method="POST" class="w-full" onsubmit="return confirm('Apakah Anda yakin ingin keluar?');">
-                                @csrf
-                                <button type="submit" class="flex items-center text-error w-full p-3 hover:bg-red-50 rounded-lg transition-all">
-                                    <i class="ri-logout-box-r-line text-lg mr-3"></i>
-                                    Logout
-                                </button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-            </aside>
-        </div>
-    </div>
 
     <script>
         // Close alerts after 5 seconds
