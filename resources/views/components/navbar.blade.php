@@ -14,6 +14,9 @@
                     <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">
                         Dashboard Admin
                     </a>
+                    <a href="{{ route('admin.template.dashboard') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">
+                        Dashboard Template Admin
+                    </a>
                 @elseif(Auth::user()->role->name == 'User')
                     <a href="{{ route('profile.dashboard') }}" class="text-gray-700 hover:text-indigo-600 transition duration-300">
                         My Profile

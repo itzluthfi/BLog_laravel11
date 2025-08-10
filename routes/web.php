@@ -23,7 +23,7 @@ Route::middleware('guest')->group(function () {
 // ============================
 // Halaman Utama dan Informasi Umum
 // ============================
-Route::get('/', [AuthController::class,'beranda'])->name('home');
+Route::get('/', [AuthController::class, 'beranda'])->name('home');
 
 
 
@@ -49,12 +49,31 @@ Route::get('/contact', function () {
 // Protected Routes (Hanya untuk User yang sudah Login)
 // ============================
 Route::middleware('auth')->group(function () {
-    
+
     // ============================
     // Profil dan Manajemen Artikel Pengguna
     // ============================
     Route::prefix('profile')->name('profile.')->group(function () {
-        Route::resource('blog', BlogController::class)->except(['index']);
+        Route::get('/blog/data', [BlogController::class, 'data'])->name('blog.data');
+
+        // ListTemplate - harus di atas {blog}
+        Route::get('/blog/listTemplate', [BlogController::class, 'indexTemplate'])
+            ->name('blogs.listTemplate');
+        // Index biasa
+        Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+        // Create
+        Route::get('/blog/create', [BlogController::class, 'create'])->name('blog.create');
+        // Store
+        Route::post('/blog', [BlogController::class, 'store'])->name('blog.store');
+        // Show
+        Route::get('/blog/{blog}', [BlogController::class, 'show'])->name('blog.show');
+        // Edit
+        Route::get('/blog/{blog}/edit', [BlogController::class, 'edit'])->name('blog.edit');
+        // Update
+        Route::put('/blog/{blog}', [BlogController::class, 'update'])->name('blog.update');
+        // Delete
+        Route::delete('/blog/{blog}', [BlogController::class, 'destroy'])->name('blog.destroy');
+
         Route::post('/upload-image-content', [BlogController::class, 'storeImageContent'])->name('upload.image.content');
         Route::get('/', [UserController::class, 'dashboard'])->name('dashboard');
         Route::post('/update', [UserController::class, 'update'])->name('update');
@@ -67,6 +86,46 @@ Route::middleware('auth')->group(function () {
         Route::post('/blog/{blog}/like', [BlogController::class, 'like'])->name('blog.like');
     });
 
+    // ============================
+    // Admin Routes (Hanya untuk Admin)
+    // ============================
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+        Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/template/dashboard', [AdminController::class, 'templateDashboard'])->name('template.dashboard');
+        // Admin Blog Routes
+        Route::get('/blog/{id}/edit', [BlogController::class, 'editAjax'])->name('blog.edit');
+        Route::post('/blog', [BlogController::class, 'store'])->name('profile.blog.store');
+        Route::put('/blog/{id}', [BlogController::class, 'update']);
+        Route::delete('/blog/{id}', [BlogController::class, 'destroy']);
+
+        // ============================
+        // Manajemen Pengguna oleh Admin
+        // ============================
+        Route::get('/users', [AdminController::class, 'users'])->name('users');
+        Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('users.edit');
+        Route::post('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
+        Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+        Route::get('/users/add', [AdminController::class, 'createUser'])->name('users.add');
+        Route::post('/user/store', [AdminController::class, 'storeUser'])->name('users.store');
+
+        // ============================
+        // Manajemen Komentar
+        // ============================
+        Route::prefix('comments')->name('comments.')->group(function () {
+            Route::post('/{blog}', [CommentController::class, 'store'])->name('store');
+            Route::get('/{comment}/edit', [CommentController::class, 'edit'])->name('edit');
+            Route::get('/index', [AdminController::class, 'comments'])->name('index');
+            Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
+            Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
+        });
+
+        // ============================
+        // Pengaturan Admin
+        // ============================
+        Route::get('/setting', [AdminController::class, 'setting'])->name('setting');
+        Route::put('/setting', [AdminController::class, 'updateSetting'])->name('setting.update');
+    });
+
 
     // Logout User
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -74,7 +133,7 @@ Route::middleware('auth')->group(function () {
     // ============================
     // Manajemen Favorit
     // ============================
-    // Route::post('/blog/{id}/favorite', [BlogController::class, 'favorite'])->name('blog.favorite');
+    Route::post('/blog/{id}/favorite', [BlogController::class, 'favorite'])->name('blog.favorite');
 
     // ============================
     // Manajemen Komentar
@@ -89,51 +148,19 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// ============================
-// Admin Routes (Hanya untuk Admin)
-// ============================
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-    // ============================
-    // Manajemen Pengguna oleh Admin
-    // ============================
-    Route::get('/users', [AdminController::class, 'users'])->name('users');
-    Route::get('/users/{id}/edit', [AdminController::class, 'editUser'])->name('users.edit');
-    Route::post('/users/{id}', [AdminController::class, 'updateUser'])->name('users.update');
-    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
-    Route::get('/users/add', [AdminController::class, 'createUser'])->name('users.add');
-    Route::post('/user/store', [AdminController::class, 'storeUser'])->name('users.store');
-
-    // ============================
-    // Manajemen Komentar
-    // ============================
-    Route::prefix('comments')->name('comments.')->group(function () {
-        Route::post('/{blog}', [CommentController::class, 'store'])->name('store');
-        Route::get('/{comment}/edit', [CommentController::class, 'edit'])->name('edit');
-        Route::get('/index', [AdminController::class, 'comments'])->name('index');
-        Route::put('/{comment}', [CommentController::class, 'update'])->name('update');
-        Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('destroy');
-    });
-
-    // ============================
-    // Pengaturan Admin
-    // ============================
-    Route::get('/setting', [AdminController::class, 'setting'])->name('setting'); 
-    Route::put('/setting', [AdminController::class, 'updateSetting'])->name('setting.update');
-});
 
 
 // ============================
 // Manajemen Kategori oleh Admin
 // ============================
 Route::prefix('admin/categories')->name('admin.categories.')->middleware(['auth', 'admin'])->group(function () {
-    Route::get('/', [CategoryController::class, 'index'])->name('index'); 
-    Route::get('/create', [CategoryController::class, 'create'])->name('create'); 
-    Route::post('/', [CategoryController::class, 'store'])->name('store'); 
-    Route::get('/{slug}/edit', [CategoryController::class, 'edit'])->name('edit'); 
-    Route::put('/{slug}', [CategoryController::class, 'update'])->name('update'); 
-    Route::delete('/{slug}', [CategoryController::class, 'destroy'])->name('destroy'); 
+    Route::get('/', [CategoryController::class, 'index'])->name('index');
+    Route::get('/create', [CategoryController::class, 'create'])->name('create');
+    Route::post('/', [CategoryController::class, 'store'])->name('store');
+    Route::get('/{slug}/edit', [CategoryController::class, 'edit'])->name('edit');
+    Route::put('/{slug}', [CategoryController::class, 'update'])->name('update');
+    Route::delete('/{slug}', [CategoryController::class, 'destroy'])->name('destroy');
 });
 
 

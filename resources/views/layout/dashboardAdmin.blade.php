@@ -389,6 +389,13 @@
                                 <span class="ml-auto bg-primary text-white text-xs px-2 py-1 rounded-full">Current</span>
                                 @endif
                             </a>
+                            <a href="{{ route('admin.template.dashboard') }}" class="menu-item flex items-center p-3 {{ request()->routeIs('admin.template.dashboard') ? 'active' : '' }}">
+                                <i class="ri-dashboard-line text-lg mr-3"></i>
+                                Dashboard Template Admin
+                                @if(request()->routeIs('admin.template.dashboard'))
+                                <span class="ml-auto bg-primary text-white text-xs px-2 py-1 rounded-full">Current</span>
+                                @endif
+                            </a>
                         </li>
                         
                         <li class="menu-title mt-6">
